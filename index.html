@@ -37,7 +37,8 @@ html,body{margin:0;padding:0}
 body{
   background:var(--panel);color:var(--text);
   font-family:'Archivo','Helvetica Neue',Arial,sans-serif;
-  font-size:16px;line-height:1.45;padding-bottom:40px;
+  font-size:16px;line-height:1.45;
+  padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));
   overscroll-behavior-y:contain;
 }
 /* faint scanline texture so it reads as an instrument, not a webpage */
@@ -45,7 +46,9 @@ body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
   background:repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px);
 }
-.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:0 14px}
+.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;
+  padding-left:calc(14px + env(safe-area-inset-left,0px));
+  padding-right:calc(14px + env(safe-area-inset-right,0px))}
 button{font-family:inherit;font-size:inherit;color:inherit;border:0;background:none;cursor:pointer}
 :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
@@ -53,14 +56,15 @@ button{font-family:inherit;font-size:inherit;color:inherit;border:0;background:n
 .lbl{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
 
 /* ---------- top bar ---------- */
-header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:1px solid var(--line)}
-.hd{max-width:460px;margin:0 auto;padding:9px 14px 10px;display:flex;align-items:center;gap:10px}
+header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:1px solid var(--line);
+  padding-top:env(safe-area-inset-top,0px)}
+.hd{max-width:460px;margin:0 auto;padding:9px calc(14px + env(safe-area-inset-right,0px)) 10px calc(14px + env(safe-area-inset-left,0px));display:flex;align-items:center;gap:10px}
 .who{flex:1;min-width:0}
 .who .lbl{color:var(--amber-dim)}
 .who .nm{font-weight:900;font-size:14px;color:var(--amber);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .purse{flex:none;background:var(--panel-3);border:1px solid var(--line);border-radius:4px;padding:5px 10px;
   font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;color:var(--good)}
-.bar{max-width:460px;margin:0 auto;padding:0 14px 9px;display:flex;gap:3px}
+.bar{max-width:460px;margin:0 auto;padding:0 calc(14px + env(safe-area-inset-right,0px)) 9px calc(14px + env(safe-area-inset-left,0px));display:flex;gap:3px}
 .seg{flex:1;height:4px;border-radius:2px;background:var(--panel-3);transition:background .4s}
 .seg.on{background:var(--amber);box-shadow:0 0 7px rgba(240,180,41,.55)}
 
@@ -183,6 +187,16 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 .medal .s{font-size:15px;font-weight:700;color:var(--text);margin-top:9px;line-height:1.4}
 @keyframes pop{0%{transform:scale(2.3);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:scale(1)}}
 
+@media (max-width:400px){
+  .hero h1{font-size:32px}
+  .hero{padding-top:16px}
+  .panel h3{font-size:18px}
+  .riddle p{font-size:15.5px}
+  .transmit{font-size:15.5px;padding:15px 12px}
+  .role .d{font-size:11.5px}
+  .readout .msg{font-size:13px}
+  .task .tt{font-size:14px}
+}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
