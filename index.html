@@ -3,1524 +3,605 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Crew Quest">
-<meta name="theme-color" content="#0E4F52">
-<title>Marlborough Crew Quest</title>
+<meta name="apple-mobile-web-app-title" content="Command Deck">
+<meta name="theme-color" content="#0B1014">
+<title>Command Deck</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700;800;900&family=Lexend:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&family=Lexend:wght@500;600;700&display=swap">
 
 <style>
 /* ============================================================
-   MARLBOROUGH CREW QUEST
-   Visual world: vintage porcelain-enamel signage — the kind
-   bolted to a New England mill-town depot. Deep teal ground,
-   chalk placards, signal orange, brass. Hard offset shadows,
-   no soft drop-shadows. Single committed theme, every color
-   painted explicitly so it holds on any host ground.
+   COMMAND DECK
+   One phone, one watch, two kids who each hold half.
+   The commander reads the intel. The field agent hears it.
+   Visual world: a handheld field console — dark instrument
+   panel, amber phosphor readouts, one hot signal colour.
+   Single committed theme; every colour painted explicitly.
    ============================================================ */
 :root{
-  --teal:#0E4F52;
-  --teal-deep:#093538;
-  --teal-lift:#146063;
-  --ink:#101817;
-  --ink-soft:#3D4C4D;
-  --chalk:#F6F2E9;
-  --chalk-2:#E8E1D2;
-  --chalk-3:#D4CBB8;
-  --orange:#E8552C;
-  --orange-deep:#BC3C1B;
-  --brass:#E9A93C;
-  --sky:#8ED0D2;
-  --good:#3C9C68;
-  --shadow:5px 5px 0 var(--ink);
-  --shadow-sm:3px 3px 0 var(--ink);
-  --r:16px;
+  --panel:#0B1014;
+  --panel-2:#111A20;
+  --panel-3:#18242C;
+  --line:#22323C;
+  --amber:#F0B429;
+  --amber-dim:#8A6A1E;
+  --signal:#FF5B35;
+  --cyan:#4FD1C5;
+  --good:#3BA776;
+  --text:#E8EEF2;
+  --text-dim:#8FA3AE;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
-  background:var(--teal);
-  color:var(--chalk);
+  background:var(--panel);color:var(--text);
   font-family:'Archivo','Helvetica Neue',Arial,sans-serif;
-  font-size:16px;line-height:1.45;
-  overscroll-behavior-y:contain;padding-bottom:118px;
+  font-size:16px;line-height:1.45;padding-bottom:40px;
+  overscroll-behavior-y:contain;
 }
+/* faint scanline texture so it reads as an instrument, not a webpage */
 body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(255,255,255,.06) 0 1.5px, transparent 2px),
-    radial-gradient(circle at 68% 42%, rgba(0,0,0,.11) 0 2px, transparent 2.5px),
-    radial-gradient(circle at 34% 77%, rgba(255,255,255,.05) 0 1.5px, transparent 2px),
-    radial-gradient(circle at 88% 88%, rgba(0,0,0,.09) 0 2px, transparent 2.5px);
-  background-size:180px 180px,240px 240px,200px 200px,260px 260px;
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px);
 }
-.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 14px}
+.wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:0 14px}
 button{font-family:inherit;font-size:inherit;color:inherit;border:0;background:none;cursor:pointer}
-:focus-visible{outline:3px solid var(--brass);outline-offset:3px;border-radius:6px}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+.read{font-family:'Lexend',sans-serif}
+.lbl{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
 
-.sign{font-family:'Alfa Slab One',Georgia,serif;font-weight:400;line-height:1}
-.readaloud{font-family:'Lexend','Archivo',sans-serif;font-weight:500}
-.label{font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
-.num{font-variant-numeric:tabular-nums}
+/* ---------- top bar ---------- */
+header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:1px solid var(--line)}
+.hd{max-width:460px;margin:0 auto;padding:9px 14px 10px;display:flex;align-items:center;gap:10px}
+.who{flex:1;min-width:0}
+.who .lbl{color:var(--amber-dim)}
+.who .nm{font-weight:900;font-size:14px;color:var(--amber);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.purse{flex:none;background:var(--panel-3);border:1px solid var(--line);border-radius:4px;padding:5px 10px;
+  font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;color:var(--good)}
+.bar{max-width:460px;margin:0 auto;padding:0 14px 9px;display:flex;gap:3px}
+.seg{flex:1;height:4px;border-radius:2px;background:var(--panel-3);transition:background .4s}
+.seg.on{background:var(--amber);box-shadow:0 0 7px rgba(240,180,41,.55)}
 
-/* ============ HQ BAR ============ */
-header{position:sticky;top:0;z-index:60;background:var(--teal-deep);border-bottom:3px solid var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.24)}
-.hq{max-width:480px;margin:0 auto;padding:9px 14px 11px}
-.hq-top{display:flex;align-items:center;gap:10px}
-.hq-crew{flex:1;min-width:0}
-.hq-crew .label{color:var(--sky);opacity:.85}
-.hq-crew .nm{font-weight:900;font-size:15px;color:var(--chalk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
-.purse{display:flex;align-items:center;gap:6px;background:var(--brass);color:var(--ink);border:2.5px solid var(--ink);
-  border-radius:999px;padding:5px 12px 5px 9px;box-shadow:var(--shadow-sm);font-weight:900;font-size:15px;flex:none}
-.purse .coin{width:17px;height:17px;border-radius:50%;background:var(--chalk);border:2.5px solid var(--ink);display:grid;place-items:center;font-size:9px;font-weight:900}
-.meter-row{display:flex;align-items:center;gap:9px;margin-top:9px}
-.meter{flex:1;height:15px;background:var(--teal);border:2.5px solid var(--ink);border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.28)}
-.meter i{display:block;height:100%;width:0%;border-radius:999px;
-  background:repeating-linear-gradient(115deg,var(--orange) 0 11px,var(--brass) 11px 22px);
-  transition:width .8s cubic-bezier(.2,1.4,.4,1)}
-.meter-pct{font-weight:900;font-size:13px;color:var(--brass);min-width:38px;text-align:right}
-.strip{display:flex;gap:4px;margin-top:10px}
-.tile{flex:1;aspect-ratio:1/1.12;border-radius:6px;border:2.5px solid var(--ink);background:var(--teal-lift);
-  color:rgba(246,242,233,.22);display:grid;place-items:center;font-family:'Alfa Slab One',serif;font-size:16px;
-  transition:transform .55s cubic-bezier(.3,1.5,.5,1),background .3s,color .3s}
-.tile.on{background:var(--brass);color:var(--ink);box-shadow:0 3px 0 var(--ink);transform:rotateY(360deg)}
+/* ---------- hero ---------- */
+.hero{padding:22px 0 4px}
+.hero .eyebrow{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10px;letter-spacing:.3em;color:var(--signal)}
+.hero h1{margin:8px 0 0;font-size:38px;line-height:.92;font-weight:900;letter-spacing:-.025em;color:var(--text)}
+.hero h1 span{display:block;color:var(--amber)}
+.hero p{margin:12px 0 0;font-size:14.5px;font-weight:600;line-height:1.5;color:var(--text-dim)}
 
-/* ============ HERO ============ */
-.hero{padding:24px 0 2px;text-align:center}
-.plate{display:inline-block;background:var(--teal-deep);border:4px solid var(--chalk);border-radius:14px;
-  padding:16px 22px 18px;box-shadow:0 0 0 4px var(--ink), var(--shadow);position:relative}
-.plate::before,.plate::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;
-  background:var(--chalk-3);border:2px solid var(--ink);top:8px}
-.plate::before{left:8px}.plate::after{right:8px}
-.plate .eyebrow{font-family:'Archivo';font-weight:900;font-size:10px;letter-spacing:.24em;color:var(--brass);text-transform:uppercase}
-.plate h1{margin:8px 0 0;font-family:'Alfa Slab One',serif;font-size:33px;line-height:.92;color:var(--chalk);text-wrap:balance}
-.plate h1 em{font-style:normal;color:var(--orange);display:block;font-size:39px}
-.plate .sub{margin:9px 0 0;font-size:12.5px;font-weight:700;color:var(--sky);letter-spacing:.03em}
+/* ---------- role cards ---------- */
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.role{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:13px}
+.role.cmd{border-color:var(--amber);box-shadow:inset 0 0 22px rgba(240,180,41,.07)}
+.role.field{border-color:var(--cyan);box-shadow:inset 0 0 22px rgba(79,209,197,.07)}
+.role .ic{font-size:20px}
+.role .r{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:10px;letter-spacing:.14em;margin-top:6px}
+.role.cmd .r{color:var(--amber)}
+.role.field .r{color:var(--cyan)}
+.role .n{font-weight:900;font-size:16px;margin-top:3px}
+.role .d{font-size:12px;font-weight:600;color:var(--text-dim);margin-top:5px;line-height:1.35}
 
-/* ============ CARDS ============ */
-.card{background:var(--chalk);color:var(--ink);border:3px solid var(--ink);border-radius:var(--r);
-  box-shadow:var(--shadow);padding:15px;margin-top:14px}
-.card.flat{box-shadow:var(--shadow-sm)}
+/* ---------- panels ---------- */
+.panel{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:15px;margin-top:14px}
+.panel.hot{border-color:var(--signal)}
+.panel.amber{border-color:var(--amber)}
+.panel .lbl{color:var(--amber-dim);display:flex;align-items:center;gap:7px}
+.panel h3{margin:9px 0 0;font-size:20px;font-weight:900;line-height:1.12;letter-spacing:-.01em}
 
-/* chapter head */
-.chap{margin-top:26px}
-.chaphead{display:flex;align-items:center;gap:11px;margin-bottom:2px}
-.chapnum{flex:none;width:38px;height:38px;border-radius:11px;border:3px solid var(--ink);background:var(--orange);
-  color:var(--chalk);display:grid;place-items:center;font-family:'Alfa Slab One',serif;font-size:17px;box-shadow:2px 2px 0 var(--ink)}
-.chaphead .ct{flex:1;min-width:0}
-.chaphead .ck{font-weight:900;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sky)}
-.chaphead h3{margin:1px 0 0;font-family:'Alfa Slab One',serif;font-size:21px;color:var(--chalk);line-height:1.02}
-.chapwhere{font-size:12.5px;font-weight:700;color:rgba(246,242,233,.62);margin:5px 0 0;line-height:1.35}
+/* classified strip */
+.classified{background:var(--signal);color:#0B1014;border-radius:6px;padding:9px 12px;margin-top:14px;
+  font-family:'JetBrains Mono',monospace;font-weight:800;font-size:11px;letter-spacing:.06em;line-height:1.4}
 
-/* card in list */
-.ccard{position:relative;display:block;width:100%;text-align:left;background:var(--chalk);color:var(--ink);
-  border:3px solid var(--ink);border-radius:14px;box-shadow:var(--shadow);padding:0;margin-top:11px;overflow:hidden;
-  transition:transform .12s ease,box-shadow .12s ease}
-.ccard:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
-.ccard.done{background:var(--chalk-2)}
-.ccard.done .ct2{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--orange)}
-.ccard-in{display:flex;gap:11px;padding:12px 13px;align-items:flex-start}
-.kbadge{flex:none;width:40px;height:40px;border-radius:10px;border:3px solid var(--ink);background:var(--teal);
-  color:var(--brass);display:grid;place-items:center;font-family:'Alfa Slab One',serif;font-size:19px;box-shadow:2px 2px 0 var(--ink)}
-.kbadge.bonus{background:var(--chalk-3);color:var(--ink);font-size:17px}
-.ccard.done .kbadge{background:var(--good);color:var(--chalk)}
-.cb{flex:1;min-width:0}
-.ck2{font-weight:800;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-deep)}
-.ct2{font-family:'Alfa Slab One',serif;font-size:17px;line-height:1.1;margin:3px 0 4px}
-.cs{font-size:13px;font-weight:600;color:var(--ink-soft);line-height:1.35}
-.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-.chip{font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;border:2px solid var(--ink);
-  border-radius:999px;padding:3px 8px;background:var(--chalk-2)}
-.chip.money{background:var(--brass)}
-.chip.photo{background:var(--sky)}
-.chip.key{background:var(--orange);color:var(--chalk)}
+/* riddle */
+.riddle{background:var(--panel-3);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:14px;margin-top:12px}
+.riddle .lbl{color:var(--amber)}
+.riddle p{margin:9px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:16.5px;line-height:1.55;color:var(--text)}
 
-/* ============ BUTTONS ============ */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--orange);color:var(--chalk);
-  border:3px solid var(--ink);border-radius:13px;box-shadow:var(--shadow);padding:14px;font-weight:900;font-size:16px;
-  transition:transform .12s,box-shadow .12s}
-.btn:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
-.btn.brass{background:var(--brass);color:var(--ink)}
-.btn.teal{background:var(--teal-lift);color:var(--chalk)}
-.btn.ghost{background:transparent;color:var(--chalk);border-color:var(--sky);box-shadow:none;font-size:14px;padding:11px}
-.btn.sm{padding:10px;font-size:14px;border-width:2.5px;box-shadow:var(--shadow-sm)}
+/* answer input */
+.guess{display:flex;gap:7px;margin-top:11px}
+.guess input{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:7px;
+  padding:12px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:var(--text)}
+.guess input::placeholder{color:#4E626D}
+.guess button{flex:0 0 88px;background:var(--amber);color:#0B1014;border-radius:7px;font-weight:900;font-size:13px}
+.verdict{margin-top:9px;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:12.5px;line-height:1.45}
+.verdict.no{color:var(--signal)}
+.verdict.yes{color:var(--good)}
 
-/* ============ SHEETS ============ */
-.sheet{position:fixed;inset:0;z-index:90;background:var(--teal);overflow-y:auto;-webkit-overflow-scrolling:touch;
-  transform:translateY(100%);transition:transform .34s cubic-bezier(.3,.9,.3,1);padding-bottom:44px}
-.sheet.open{transform:translateY(0)}
-.sheet-bar{position:sticky;top:0;z-index:5;background:var(--teal-deep);border-bottom:3px solid var(--ink);
-  display:flex;align-items:center;gap:10px;padding:10px 14px}
-.sheet-bar .x{width:36px;height:36px;flex:none;border-radius:10px;background:var(--chalk);color:var(--ink);
-  border:2.5px solid var(--ink);font-weight:900;font-size:19px;line-height:1;box-shadow:2px 2px 0 var(--ink)}
-.sheet-bar h2{margin:0;font-family:'Alfa Slab One',serif;font-size:16px;color:var(--chalk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* the big transmit button */
+.transmit{width:100%;margin-top:14px;background:var(--cyan);color:#06201E;border-radius:10px;padding:17px 14px;
+  font-weight:900;font-size:17px;letter-spacing:.01em;display:flex;flex-direction:column;align-items:center;gap:3px;
+  box-shadow:0 0 0 0 rgba(79,209,197,.55);transition:transform .12s,box-shadow .3s}
+.transmit:active{transform:scale(.985)}
+.transmit.armed{animation:pulseGlow 1.9s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(79,209,197,.5)}50%{box-shadow:0 0 0 11px rgba(79,209,197,0)}}
+.transmit .sub{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:10.5px;letter-spacing:.12em;opacity:.75}
+.transmit.sending{background:var(--signal);color:#fff}
+.transmit[disabled]{background:var(--panel-3);color:var(--text-dim);animation:none;box-shadow:none}
 
-.clue{background:var(--chalk);color:var(--ink);border:3px solid var(--ink);border-radius:var(--r);
-  box-shadow:var(--shadow);padding:16px;margin-top:14px}
-.clue .label{color:var(--orange-deep)}
-.clue p{margin:9px 0 0;font-family:'Lexend',sans-serif;font-weight:500;font-size:17px;line-height:1.55}
-.clue .whisper{margin-top:11px;font-size:12.5px;font-weight:700;color:var(--ink-soft);font-family:'Archivo'}
+/* transmission readout */
+.readout{background:#05090B;border:1px solid var(--cyan);border-radius:9px;padding:14px;margin-top:12px}
+.readout .lbl{color:var(--cyan)}
+.readout .msg{margin:9px 0 0;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;line-height:1.6;color:var(--cyan)}
+.readout .cursor{display:inline-block;width:8px;height:15px;background:var(--cyan);vertical-align:-2px;animation:blink .95s step-end infinite}
+@keyframes blink{50%{opacity:0}}
 
-/* IMPOSSIBLE THING */
-.imp{background:var(--ink);color:var(--chalk);border:3px solid var(--brass);border-radius:var(--r);
-  box-shadow:var(--shadow);padding:17px;margin-top:14px;position:relative;overflow:hidden}
-.imp .label{color:var(--brass)}
-.imp .claim{margin:11px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:19px;line-height:1.5;color:var(--chalk)}
-.tf{display:flex;gap:9px;margin-top:15px}
-.tfbtn{flex:1;border:3px solid var(--chalk);border-radius:12px;padding:15px 6px;font-family:'Alfa Slab One',serif;
-  font-size:17px;background:transparent;color:var(--chalk);transition:.16s}
-.tfbtn.t.on{background:var(--good);border-color:var(--good);color:var(--chalk)}
-.tfbtn.f.on{background:var(--orange);border-color:var(--orange);color:var(--chalk)}
-.tallyrow{display:flex;gap:6px;margin-top:11px}
-.tally{flex:1;text-align:center;border:2.5px solid rgba(246,242,233,.3);border-radius:9px;padding:7px 3px}
-.tally .n{font-weight:900;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky)}
-.tally .v{font-family:'Alfa Slab One',serif;font-size:15px;margin-top:3px;color:rgba(246,242,233,.35)}
-.tally.voted .v{color:var(--brass)}
-.reveal{margin-top:14px}
-.revealbox{background:var(--brass);color:var(--ink);border:3px solid var(--ink);border-radius:13px;padding:15px;
-  animation:slam .5s cubic-bezier(.2,1.7,.4,1) both}
-.revealbox .verdict{font-family:'Alfa Slab One',serif;font-size:26px;line-height:1}
-.revealbox p{margin:9px 0 0;font-size:15px;font-weight:600;line-height:1.45;font-family:'Lexend',sans-serif}
+/* task rows */
+.task{display:flex;gap:11px;align-items:flex-start;background:var(--panel-3);border:1px solid var(--line);
+  border-radius:9px;padding:12px;margin-top:9px;width:100%;text-align:left;transition:.15s}
+.task.done{background:rgba(59,167,118,.14);border-color:var(--good)}
+.task .box{flex:none;width:24px;height:24px;border-radius:5px;border:1.5px solid var(--text-dim);display:grid;
+  place-items:center;font-weight:900;font-size:14px;margin-top:1px}
+.task.done .box{background:var(--good);border-color:var(--good);color:#04140D}
+.task .tb{flex:1;min-width:0}
+.task .who2{display:block;font-family:'JetBrains Mono',monospace;font-weight:800;font-size:9.5px;letter-spacing:.14em}
+.task.cmd .who2{color:var(--amber)}
+.task.field .who2{color:var(--cyan)}
+.task.drv .who2{color:var(--text-dim)}
+.task .tt{display:block;margin:5px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:14.5px;line-height:1.4}
 
-/* jobs */
-.job{display:flex;gap:11px;align-items:flex-start;background:var(--chalk);color:var(--ink);border:3px solid var(--ink);
-  border-radius:13px;box-shadow:var(--shadow-sm);padding:12px;margin-top:10px;transition:background .2s,transform .1s;
-  text-align:left;width:100%}
-.job:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-.job.checked{background:var(--good);color:var(--chalk)}
-.job.checked .who{background:var(--chalk);color:var(--ink)}
-.job.checked .role{color:rgba(246,242,233,.85)}
-.tick{flex:none;width:28px;height:28px;border-radius:8px;border:2.5px solid currentColor;display:grid;place-items:center;
-  font-weight:900;font-size:16px;background:transparent;margin-top:1px}
-.job.checked .tick{background:var(--chalk);color:var(--good)}
-.jb{flex:1;min-width:0}
-.who{display:inline-block;background:var(--teal);color:var(--brass);border:2px solid var(--ink);border-radius:999px;
-  padding:2px 9px;font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
-.role{font-weight:900;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--orange-deep);margin-left:6px}
-.jtext{margin:6px 0 0;font-size:15px;font-weight:600;line-height:1.4;font-family:'Lexend',sans-serif;display:block}
+/* buttons */
+.btn{display:block;width:100%;background:var(--panel-3);border:1px solid var(--line);border-radius:9px;
+  padding:13px;font-weight:800;font-size:14.5px;margin-top:10px;text-align:center}
+.btn.go{background:var(--good);color:#04140D;border-color:var(--good);font-size:16px;font-weight:900}
+.btn.warn{border-color:var(--signal);color:var(--signal)}
+.btn.amber{background:var(--amber);color:#0B1014;border-color:var(--amber);font-weight:900}
+.btn[disabled]{opacity:.4;pointer-events:none}
 
-/* checklist */
-.chk{display:flex;gap:10px;align-items:center;background:var(--chalk);color:var(--ink);border:2.5px solid var(--ink);
-  border-radius:11px;box-shadow:2px 2px 0 var(--ink);padding:11px;margin-top:8px;width:100%;text-align:left;transition:.15s}
-.chk.on{background:var(--good);color:var(--chalk);transform:translate(2px,2px);box-shadow:0 0 0}
-.chk .tick{width:24px;height:24px;font-size:14px;border-radius:7px;margin:0}
-.chk.on .tick{background:var(--chalk);color:var(--good)}
-.chk span.t{flex:1;font-size:14.5px;font-weight:700;line-height:1.3;font-family:'Lexend',sans-serif}
+/* stop list */
+.stopcard{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px;margin-top:11px}
+.stopcard.locked{opacity:.5}
+.stopcard .n{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:10px;letter-spacing:.14em;color:var(--amber-dim)}
+.stopcard h4{margin:5px 0 0;font-size:17px;font-weight:900}
+.stopcard .a{font-size:12.5px;color:var(--text-dim);font-weight:600;margin-top:3px}
+.stopcard .mapbtn{display:block;width:100%;margin-top:10px;background:var(--panel-3);border:1px solid var(--line);
+  border-radius:7px;padding:10px;font-weight:800;font-size:12.5px;color:var(--cyan);text-align:center}
 
-/* plan B */
-.planb{background:var(--teal-lift);border:3px dashed var(--sky);border-radius:13px;padding:12px;margin-top:13px}
-.planb .label{color:var(--brass)}
-.planb p{margin:6px 0 0;font-size:14px;font-weight:600;line-height:1.42;color:var(--chalk)}
+/* dividers */
+.sect{display:flex;align-items:center;gap:10px;margin:24px 0 0}
+.sect .lbl{color:var(--text-dim);white-space:nowrap}
+.sect hr{flex:1;border:0;border-top:1px solid var(--line);margin:0}
 
-/* money */
-.moneybox{background:var(--brass);color:var(--ink);border:3px solid var(--ink);border-radius:13px;box-shadow:var(--shadow-sm);padding:13px;margin-top:13px}
-.moneybox .label{color:var(--ink);opacity:.7}
-.moneybox p{margin:5px 0 10px;font-size:14.5px;font-weight:700;line-height:1.38}
-.votes{display:flex;gap:7px}
-.vote{flex:1;background:var(--chalk);border:2.5px solid var(--ink);border-radius:10px;padding:9px 4px;font-weight:900;
-  font-size:12.5px;box-shadow:2px 2px 0 var(--ink);transition:.15s}
-.vote.on{background:var(--good);color:var(--chalk);transform:translate(2px,2px);box-shadow:0 0 0}
-.spendrow{display:flex;gap:7px;margin-top:9px}
-.spendrow input{flex:1;min-width:0;font-family:'Archivo';font-weight:800;font-size:16px;padding:10px;
-  border:2.5px solid var(--ink);border-radius:10px;background:var(--chalk);color:var(--ink)}
-
-/* answers + photos */
-.answer{margin-top:13px}
-.answer input,.answer textarea{width:100%;font-family:'Lexend',sans-serif;font-weight:500;font-size:16px;padding:12px;
-  border:3px solid var(--ink);border-radius:12px;background:var(--chalk);color:var(--ink);box-shadow:var(--shadow-sm);resize:vertical}
-.answer .label{color:var(--sky);margin-bottom:7px;display:block}
-.photobox{margin-top:13px}
-.photobox img{width:100%;border:3px solid var(--ink);border-radius:13px;box-shadow:var(--shadow-sm);display:block}
-.photo-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:var(--sky);color:var(--ink);
-  border:3px solid var(--ink);border-radius:13px;box-shadow:var(--shadow-sm);padding:14px;font-weight:900;font-size:15px}
-input[type=file]{display:none}
-
-/* alphabet */
-.abc{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
-.abc button{aspect-ratio:1;border:2.5px solid var(--ink);border-radius:9px;background:var(--chalk);color:var(--ink);
-  font-family:'Alfa Slab One',serif;font-size:17px;box-shadow:2px 2px 0 var(--ink);transition:.14s}
-.abc button.on{background:var(--orange);color:var(--chalk);transform:translate(2px,2px);box-shadow:0 0 0}
-.abccount{text-align:center;font-weight:900;margin-top:10px;color:var(--brass);font-size:14px}
-
-/* base camp */
-.namerow{display:flex;gap:9px;align-items:center;margin-top:10px}
-.namerow .tag{flex:none;width:74px;font-weight:900;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
-.namerow input{flex:1;min-width:0;font-family:'Archivo';font-weight:800;font-size:16px;padding:10px;
-  border:2.5px solid var(--ink);border-radius:10px;background:var(--chalk-2);color:var(--ink)}
-.shake{display:flex;gap:8px;margin-top:12px}
-.shakestep{flex:1;background:var(--teal-lift);border:3px solid var(--ink);border-radius:13px;padding:11px 7px;text-align:center;box-shadow:var(--shadow-sm)}
-.shakestep .n{font-family:'Alfa Slab One',serif;font-size:12px;color:var(--brass)}
-.shakestep .m{font-size:12.5px;font-weight:800;margin-top:5px;line-height:1.25;color:var(--chalk)}
-
-
-/* ---------- THE ROUTE ---------- */
-.route{background:var(--ink);border:3px solid var(--brass);border-radius:var(--r);padding:16px;margin-top:16px;box-shadow:var(--shadow)}
-.route .label{color:var(--brass)}
-.route h3{margin:9px 0 0;font-family:'Alfa Slab One',serif;font-size:21px;color:var(--chalk);line-height:1.08}
-.route p.intro{margin:8px 0 0;font-size:14px;font-weight:600;line-height:1.45;color:var(--sky)}
-.stop{display:flex;gap:12px;align-items:flex-start;background:var(--chalk);color:var(--ink);
-  border:3px solid var(--ink);border-radius:13px;box-shadow:var(--shadow-sm);padding:12px;margin-top:11px;
-  width:100%;text-align:left;transition:.15s}
-.stop:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-.stop.done{background:var(--chalk-2)}
-.stop.done .sname{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--orange)}
-.snum{flex:none;width:34px;height:34px;border-radius:10px;border:3px solid var(--ink);background:var(--orange);
-  color:var(--chalk);display:grid;place-items:center;font-family:'Alfa Slab One',serif;font-size:15px;box-shadow:2px 2px 0 var(--ink)}
-.stop.done .snum{background:var(--good)}
-.sb{flex:1;min-width:0}
-.sname{font-family:'Alfa Slab One',serif;font-size:16px;line-height:1.12}
-.saddr{font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-top:3px;line-height:1.3}
-.swhy{font-size:13px;font-weight:600;margin-top:6px;line-height:1.38;font-family:'Lexend',sans-serif}
-.sgo{display:inline-block;margin-top:8px;background:var(--teal);color:var(--brass);border:2.5px solid var(--ink);
-  border-radius:999px;padding:5px 12px;font-weight:900;font-size:11.5px;letter-spacing:.05em;box-shadow:2px 2px 0 var(--ink)}
-
-/* read-aloud */
-.speak{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--good);color:var(--chalk);
-  border:3px solid var(--ink);border-radius:13px;box-shadow:var(--shadow);padding:16px;font-weight:900;font-size:17px;
-  margin-top:13px;letter-spacing:.02em;transition:transform .12s,box-shadow .12s}
-.speak:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
-.speak.talking{background:var(--orange)}
-.speak .wave{display:inline-flex;gap:2.5px;align-items:flex-end;height:17px}
-.speak .wave i{width:3.5px;background:var(--chalk);border-radius:2px;height:6px;animation:none}
-.speak.talking .wave i{animation:wv .62s ease-in-out infinite}
-.speak.talking .wave i:nth-child(2){animation-delay:.13s}
-.speak.talking .wave i:nth-child(3){animation-delay:.26s}
-.speak.talking .wave i:nth-child(4){animation-delay:.39s}
-@keyframes wv{0%,100%{height:5px}50%{height:17px}}
-.earbtn{flex:none;width:34px;height:34px;border-radius:9px;background:var(--teal);color:var(--brass);
-  border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-size:15px;display:grid;place-items:center;margin-top:1px}
-.job.checked .earbtn{background:var(--chalk);color:var(--good)}
-.mutebtn{flex:none;width:34px;height:34px;border-radius:9px;background:var(--teal);color:var(--brass);
-  border:2.5px solid var(--ink);box-shadow:2px 2px 0 var(--ink);font-size:15px;display:grid;place-items:center}
-.mutebtn.off{background:var(--ink);color:rgba(246,242,233,.4)}
-
-/* control row: swap / re-roll / skip */
-.ctrls{display:flex;gap:7px;margin-top:13px}
-.ctrl{flex:1;background:var(--teal-lift);color:var(--chalk);border:2.5px solid var(--sky);border-radius:11px;
-  padding:11px 4px;font-weight:900;font-size:11.5px;letter-spacing:.03em;line-height:1.25;text-align:center}
-.ctrl:active{transform:translate(2px,2px)}
-.ctrl .ic{display:block;font-size:17px;margin-bottom:3px}
-.ctrl.warm{border-color:var(--brass);color:var(--brass)}
-.banner{background:var(--brass);color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:11px 13px;
-  margin-top:13px;font-weight:800;font-size:13.5px;line-height:1.4}
-.banner.swap{background:var(--sky)}
-.chip.skip{background:var(--ink);color:var(--sky)}
-.chip.rr{background:var(--sky)}
-.ccard.skipped{background:var(--chalk-3);opacity:.9}
-.ccard.skipped .kbadge{background:var(--ink);color:var(--sky)}
-
-/* wrist line / watch */
-.buzz{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:var(--ink);color:var(--sky);
-  border:3px solid var(--sky);border-radius:13px;box-shadow:var(--shadow-sm);padding:13px;font-weight:900;font-size:14.5px;
-  margin-top:13px;letter-spacing:.02em}
-.buzz:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-.buzz.sent{background:var(--good);color:var(--chalk);border-color:var(--good)}
-.wrist{background:var(--ink);color:var(--chalk);border:3px solid var(--sky);border-radius:var(--r);padding:15px;margin-top:14px}
-.wrist .label{color:var(--sky)}
-.wrist ol{margin:9px 0 0;padding-left:19px;font-size:14px;font-weight:600;line-height:1.6}
-.wrist ol li::marker{color:var(--brass);font-weight:900}
-.wrist code{background:var(--teal-lift);padding:1px 6px;border-radius:5px;font-size:13px}
-#toast{position:fixed;left:50%;transform:translateX(-50%) translateY(140%);bottom:88px;z-index:140;
-  background:var(--good);color:var(--chalk);border:3px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);
-  padding:12px 18px;font-weight:900;font-size:14px;max-width:calc(100% - 28px);text-align:center;
-  visibility:hidden;opacity:0;pointer-events:none;
-  transition:transform .3s cubic-bezier(.2,1.4,.4,1),opacity .2s,visibility .2s}
-#toast.on{transform:translateX(-50%) translateY(0);visibility:visible;opacity:1}
-
-/* wild card button */
-.sillybtn{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:70;background:var(--brass);color:var(--ink);
-  border:3px solid var(--ink);border-radius:999px;padding:13px 24px;font-weight:900;font-size:15px;box-shadow:var(--shadow);
-  display:flex;align-items:center;gap:9px}
-.sillybtn:active{transform:translateX(-50%) translateY(4px);box-shadow:1px 1px 0 var(--ink)}
-.sillybtn .dot{width:9px;height:9px;border-radius:50%;background:var(--orange);border:2px solid var(--ink);animation:pulse 1.9s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.55)}}
+.foot{font-size:11.5px;color:#5D717C;line-height:1.6;margin-top:26px;text-align:center;font-weight:600}
 
 /* celebration */
-#stamp{position:fixed;inset:0;z-index:120;display:none;place-items:center;background:rgba(9,53,56,.88);padding:24px}
-#stamp.on{display:grid}
-.patch{background:var(--brass);border:5px solid var(--ink);border-radius:24px;padding:26px 22px;text-align:center;
-  color:var(--ink);box-shadow:8px 8px 0 var(--ink);max-width:342px;animation:slam .55s cubic-bezier(.2,1.7,.4,1) both}
-.patch .letter{font-family:'Alfa Slab One',serif;font-size:64px;line-height:.85;color:var(--orange);
-  -webkit-text-stroke:3px var(--ink);paint-order:stroke fill}
-.patch .cheer{font-family:'Alfa Slab One',serif;font-size:22px;margin-top:10px;line-height:1.06;text-wrap:balance}
-.patch .note{font-size:14px;font-weight:700;margin-top:9px;line-height:1.38}
-@keyframes slam{0%{transform:scale(2.6) rotate(-13deg);opacity:0}55%{transform:scale(.9) rotate(3deg);opacity:1}
-  75%{transform:scale(1.06) rotate(-1.5deg)}100%{transform:scale(1) rotate(-2deg)}}
-.shakescreen{animation:shk .42s}
-@keyframes shk{10%{transform:translate(-6px,3px)}25%{transform:translate(7px,-4px)}40%{transform:translate(-5px,-3px)}
-  60%{transform:translate(4px,4px)}80%{transform:translate(-3px,1px)}100%{transform:translate(0,0)}}
-#confetti{position:fixed;inset:0;z-index:130;pointer-events:none;display:none}
-#confetti.on{display:block}
-
-/* trophy + album */
-.trophy-wrap{text-align:center;padding:12px 0 26px;position:relative}
-.cup{font-size:94px;line-height:1;animation:float 3.2s ease-in-out infinite;filter:drop-shadow(0 8px 0 rgba(0,0,0,.25));position:relative}
-@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-14px) rotate(2deg)}}
-.rays{position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:300px;height:300px;pointer-events:none;opacity:.45;
-  background:conic-gradient(from 0deg,transparent 0 8deg,rgba(233,169,60,.55) 8deg 16deg,transparent 16deg 24deg);
-  animation:spin 24s linear infinite;border-radius:50%}
-@keyframes spin{to{transform:translateX(-50%) rotate(360deg)}}
-.album{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.album figure{margin:0}
-.album img{width:100%;aspect-ratio:1;object-fit:cover;border:3px solid var(--ink);border-radius:12px;box-shadow:var(--shadow-sm);display:block}
-.album figcaption{font-size:11px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:var(--sky);margin-top:5px}
-.footnote{font-size:12px;font-weight:600;color:rgba(246,242,233,.58);line-height:1.55;margin-top:22px;text-align:center}
+#flash{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(11,16,20,.94);padding:26px}
+#flash.on{display:grid}
+.medal{text-align:center;animation:pop .5s cubic-bezier(.2,1.7,.4,1) both}
+.medal .ltr{font-size:76px;font-weight:900;color:var(--amber);line-height:.85;letter-spacing:-.04em}
+.medal .t{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:13px;letter-spacing:.2em;color:var(--cyan);margin-top:12px}
+.medal .s{font-size:15px;font-weight:700;color:var(--text);margin-top:9px;line-height:1.4}
+@keyframes pop{0%{transform:scale(2.3);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:scale(1)}}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
 }
 </style>
 
-<canvas id="confetti"></canvas>
-<div id="stamp" role="alertdialog" aria-live="assertive"><div class="patch" id="patch"></div></div>
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="flash"><div class="medal" id="medal"></div></div>
 
 <header>
-  <div class="hq">
-    <div class="hq-top">
-      <div class="hq-crew">
-        <div class="label">The Crew</div>
-        <div class="nm" id="crewName">Tap Base Camp to name us</div>
-      </div>
-      <button class="mutebtn" id="muteBtn" onclick="toggleVoice(this)" aria-label="Read-aloud on">🔊</button>
-      <div class="purse"><span class="coin">$</span><span class="num" id="purse">100</span></div>
+  <div class="hd">
+    <div class="who">
+      <div class="lbl">Commander</div>
+      <div class="nm" id="cmdName">— set names below —</div>
     </div>
-    <div class="meter-row">
-      <div class="meter"><i id="meterFill"></i></div>
-      <div class="meter-pct num" id="meterPct">0%</div>
-    </div>
-    <div class="strip" id="strip"></div>
+    <div class="purse" id="purse">$100</div>
   </div>
+  <div class="bar" id="segbar"></div>
 </header>
 
 <main class="wrap">
+
   <section class="hero">
-    <div class="plate">
-      <div class="eyebrow">Marlborough &middot; MetroWest &middot; Anywhere</div>
-      <h1>CREW<em>QUEST</em></h1>
-      <div class="sub">Three people. One team. One hundred dollars.</div>
-    </div>
+    <div class="eyebrow">EYES ONLY · COMMANDER</div>
+    <h1>COMMAND<span>DECK</span></h1>
+    <p>You are running this operation. The phone is yours and nobody else's.
+       Your field agent has the watch. He cannot read the mission — you have to
+       transmit it to him. Neither of you has the whole thing.</p>
   </section>
 
-  
-  <div class="route">
-    <div class="label">🚗 The Route — where to actually drive</div>
-    <h3>Three stops. It gets better each time.</h3>
-    <p class="intro">Tap a stop to open it in Maps. Tap the number when you have been. Candy, then mini golf and ice cream, then trampolines and the arcade — deliberately in that order, so nobody wants to leave early.</p>
-    <div id="stopList"></div>
-    <button class="speak" style="margin-top:12px" onclick="speakRoute(this)">
-      <span class="wave"><i></i><i></i><i></i><i></i></span> READ THE ROUTE OUT LOUD</button>
+  <div class="classified" id="classified">
+    ⚠ DRIVER IS NOT CLEARED FOR THIS SCREEN. Do not let the driver read the phone.
+    The driver only finds out where you are going when you tell them.
   </div>
 
-  <button class="btn brass" style="margin-top:16px" onclick="openBase()">⛺ &nbsp;BASE CAMP — start here</button>
+  <div class="roles">
+    <div class="role cmd">
+      <div class="ic">📡</div>
+      <div class="r">COMMANDER</div>
+      <div class="n" id="roleCmd">Commander</div>
+      <div class="d">Holds the phone. Decodes every riddle. Decides where the car goes. Transmits to the field agent.</div>
+    </div>
+    <div class="role field">
+      <div class="ic">⌚</div>
+      <div class="r">FIELD AGENT</div>
+      <div class="n" id="roleField">Field Agent</div>
+      <div class="d">Wears the watch. Hears every mission out loud. Does the thing. Reports back.</div>
+    </div>
+  </div>
 
-  <div id="chapters"></div>
+  <div class="panel" id="setupPanel">
+    <div class="lbl">◈ Crew setup — once</div>
+    <div class="guess" style="margin-top:11px">
+      <input id="inCmd" placeholder="Commander's name" autocomplete="off">
+    </div>
+    <div class="guess">
+      <input id="inField" placeholder="Field agent's name" autocomplete="off">
+    </div>
+    <div class="guess">
+      <input id="inDrv" placeholder="Driver's name" autocomplete="off">
+    </div>
+    <div class="guess">
+      <input id="inPhone" placeholder="Field agent's phone/watch number (optional)" inputmode="tel" autocomplete="off">
+    </div>
+    <button class="btn amber" onclick="saveCrew()">LOCK IN THE CREW</button>
+    <p class="foot" style="text-align:left;margin-top:10px">
+      The number is only used to open your own Messages app pre-filled, so the watch buzzes.
+      It never leaves this phone.
+    </p>
+  </div>
 
-  <div class="chap"><div class="chaphead"><div class="chapnum" style="background:var(--brass);color:var(--ink)">★</div>
-    <div class="ct"><div class="ck">The Vault</div><h3>Everything you found</h3></div></div></div>
-  <button class="btn teal" style="margin-top:11px" onclick="openAlbum()">📸 &nbsp;Quest Album</button>
-  <button class="btn ghost" style="margin-top:10px" onclick="openTrophy()">🏆 &nbsp;The Crew Cup</button>
-  <button class="btn ghost" style="margin-top:10px" onclick="wipe(this)">↺ &nbsp;Start a brand new quest</button>
+  <div id="mission"></div>
 
-  <p class="footnote">
-    Works anywhere. Every card is a <em>type</em> of hunt, not one address — so it plays at a shop,
-    a sidewalk, a park, or a trail, and nothing dead-ends when a place is closed.<br><br>
-    Local anchors used: Wayside Country Store (1015 Boston Post Rd E) · Assabet River Rail Trail ·
-    Ghiloni Park, Concord Rd · Trombetta's Farm, 655 Farm Rd.
+  <div class="sect"><div class="lbl">Destinations</div><hr></div>
+  <div id="stops"></div>
+
+  <button class="btn warn" style="margin-top:20px" onclick="resetAll(this)">↺ Start a brand new operation</button>
+
+  <p class="foot">
+    Every mission needs both kids. The commander never does the field task.
+    The field agent never sees the words. Neither one can finish alone — that is the point.
   </p>
 </main>
-
-<button class="sillybtn" onclick="wildcard()"><span class="dot"></span>WILD CARD</button>
-<div class="sheet" id="sheet"><div id="sheetInner"></div></div>
 
 <script>
 /* =========================================================
    STATE
    ========================================================= */
-var KEY='crew-quest-metrowest-v2';
-var S={crew:'',names:{D:'Grown-up',H:'Kid One',P:'Kid Two'},spent:0,done:{},jobs:{},chk:{},answers:{},photos:{},abc:{},votes:{},tf:{},revealed:{},shake:null,extras:0,
-  swap:{},skipped:{},reroll:{},voice:true,stops:{}};
-try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);for(var k in p)S[k]=p[k];}}catch(e){}
+var KEY='command-deck-v1';
+var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0};
+try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
-function N(t){return String(t).replace(/\{D\}/g,S.names.D).replace(/\{H\}/g,S.names.H).replace(/\{P\}/g,S.names.P);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function C(){return S.cmd||'Commander';}
+function F(){return S.field||'Field Agent';}
+function D(){return S.drv||'Driver';}
+function N(t){return String(t).replace(/\{C\}/g,C()).replace(/\{F\}/g,F()).replace(/\{D\}/g,D());}
 function buzz(m){try{if(navigator.vibrate)navigator.vibrate(m);}catch(e){}}
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
-/* =========================================================
-   READ-ALOUD. The youngest player may not read yet, so nothing
-   in this game may require reading. Every clue, job, reveal
-   and wild card can be spoken. Emoji and markup are stripped
-   before speaking or the voice reads them out as words.
-   ========================================================= */
-var VOICE={v:null,ready:false};
+/* speech — the field agent's whole experience runs through this */
+var SPK={ready:('speechSynthesis' in window),v:null};
 function pickVoice(){
-  var vs=[];try{vs=window.speechSynthesis.getVoices()||[];}catch(e){return null;}
+  var vs=[];try{vs=speechSynthesis.getVoices()||[];}catch(e){return null;}
   if(!vs.length)return null;
-  var pref=['Samantha','Ava','Allison','Karen','Moira','Google US English','Daniel','Alex'];
-  for(var i=0;i<pref.length;i++){
-    var f=vs.filter(function(v){return v.name.indexOf(pref[i])>-1;})[0];
-    if(f)return f;
-  }
+  var pref=['Samantha','Ava','Allison','Karen','Daniel'];
+  for(var i=0;i<pref.length;i++){var m=vs.filter(function(v){return v.name.indexOf(pref[i])>-1;})[0];if(m)return m;}
   return vs.filter(function(v){return /^en/i.test(v.lang);})[0]||vs[0];
 }
-if('speechSynthesis' in window){
-  VOICE.ready=true;
-  VOICE.v=pickVoice();
-  try{window.speechSynthesis.onvoiceschanged=function(){VOICE.v=pickVoice();};}catch(e){}
-}
-function sayable(t){
-  return String(t)
-    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}]/gu,' ')
-    .replace(/\{[DHP]\}/g,'')
-    .replace(/\s+/g,' ').trim();
-}
-function stopTalking(){
-  try{if(VOICE.ready)window.speechSynthesis.cancel();}catch(e){}
-  var b=document.getElementById('speakBtn');if(b)b.classList.remove('talking');
-}
-function speak(text,btn){
-  if(!VOICE.ready||!S.voice)return false;
-  var t=sayable(N(text));if(!t)return false;
+if(SPK.ready){SPK.v=pickVoice();try{speechSynthesis.onvoiceschanged=function(){SPK.v=pickVoice();};}catch(e){}}
+function say(text,onEnd){
+  if(!SPK.ready){if(onEnd)onEnd();return;}
   try{
-    window.speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(t);
-    if(VOICE.v)u.voice=VOICE.v;
-    u.lang=(VOICE.v&&VOICE.v.lang)||'en-US';
-    u.rate=0.9;u.pitch=1.05;u.volume=1;
-    if(btn){btn.classList.add('talking');
-      u.onend=function(){btn.classList.remove('talking');};
-      u.onerror=function(){btn.classList.remove('talking');};}
-    window.speechSynthesis.speak(u);
-    return true;
-  }catch(e){return false;}
-}
-function toggleVoice(el){
-  S.voice=!S.voice;save();
-  if(!S.voice)stopTalking();
-  el.classList.toggle('off',!S.voice);
-  el.textContent=S.voice?'🔊':'🔇';
-  el.setAttribute('aria-label',S.voice?'Read-aloud on':'Read-aloud off');
-  toast(S.voice?'Read-aloud ON — nobody has to read.':'Read-aloud off.');
-}
-/* speak a whole card: clue, then who does what */
-function speakCard(id,btn){
-  var c=effCard(id);
-  var parts=[N(c.clue)];
-  effJobs(c,id).forEach(function(j){parts.push(S.names[j.who]+'. '+N(j.t));});
-  speak(parts.join(' ... '),btn);
+    speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(String(text).replace(/[^\x20-\x7E]/g,' '));
+    if(SPK.v)u.voice=SPK.v;
+    u.rate=0.88;u.pitch=1.0;u.volume=1;
+    if(onEnd){u.onend=onEnd;u.onerror=onEnd;}
+    speechSynthesis.speak(u);
+  }catch(e){if(onEnd)onEnd();}
 }
 
 /* =========================================================
-   THE QUEST — five chapters, eight keystones spelling TEAMWORK.
-   Every card works ANYWHERE of its type. Real local anchors
-   are named as "best place to do this," never as requirements.
+   THE OPERATION
+   Eight missions. The commander decodes a riddle to learn
+   WHERE. The field agent is transmitted WHAT — and only he
+   hears it. Letters spell the answer to the whole thing.
    ========================================================= */
-var CHAPTERS=[
+var M=[
 {
- n:'I', kick:'Chapter One', title:'The Oath',
- where:'In the car, before anybody gets out. Two minutes, max.',
- cards:[
- {
-  id:'c1', key:'T', kick:'Impossible Thing #1', title:'The Store That Walked',
-  sub:'Vote on the drive. Nobody gets to look it up.',
-  clue:'Here is the claim. One of the richest men who ever lived — the man who invented the car factory — once bought an ENTIRE STORE, took it apart, and dragged it to Marlborough behind a team of oxen. Oxen. In the nineteen-twenties. While cars already existed.',
-  whisper:'Everybody votes before anybody argues. {P} votes first, out loud.',
-  impossible:{
-    claim:'A car millionaire moved a whole store to Marlborough using OXEN.',
-    answer:true,
-    reveal:'TRUE. Henry Ford bought the Wayside Country Store in 1928, had it partly taken apart, and moved it from Sudbury to Marlborough — pulled by oxen. The building itself was put up in 1790. It is still standing at 1015 Boston Post Rd E, still selling penny candy, still on the original wide pine floors.'
-  },
-  jobs:[
-   {who:'P',role:'First Vote',t:'You vote first. TRUE or FALSE. No looking at anyone\'s face for a hint.'},
-   {who:'H',role:'The Case',t:'Argue your side out loud for ten seconds before the reveal. Say WHY you think that.'},
-   {who:'D',role:'Keeper',t:'Vote last, and vote honestly — even if you already know. Then hit reveal.'}
-  ],
-  planb:'Not driving anywhere near it? Doesn\'t matter. This one is played entirely with your mouths.'
- },
- {
-  id:'c2', kick:'Ritual', title:'The Three Jobs',
-  sub:'Roles rotate all day. Read them out loud once.',
-  clue:'Every mission today has three jobs, and they move around. Nobody is the boss twice in a row.',
-  whisper:'SPOTTER finds it. VOICE says it. KEEPER writes it down and holds the money.',
-  jobs:[
-   {who:'P',role:'Spotter',t:'Your eyes are the best on this crew. Your job is to see things nobody else sees.'},
-   {who:'H',role:'Voice',t:'You do the talking to strangers today. Real questions, real answers, look them in the eye.'},
-   {who:'D',role:'Keeper',t:'You hold the money and you say the least. Hardest job on the crew.'}
-  ],
-  planb:'Somebody hates their job? Swap it. The only rule is nobody does all three.'
- }]
+ l:'T', stop:1, at:'On the way to stop one',
+ title:'Identify the target',
+ riddle:'It is older than every single house on your street. Older than your grandparents\' grandparents. A very rich man once bought the whole building and dragged it here behind a team of OXEN, because trucks were not good enough. It sells candy in barrels. What is the name of the store?',
+ accept:['wayside','wayside country','wayside country store','country store'],
+ hint:'Two words. The first one is what you call the side of a road.',
+ solved:'WAYSIDE COUNTRY STORE. Built 1790. Henry Ford bought it and moved it here in 1928 — by oxen. Tell the driver to go. Do not tell them why.',
+ tx:'Field agent. Your target is a very old store full of candy. When you get inside, find the oldest thing you can see. Do not touch it. Point at it and say, found it.',
+ cmdTask:'Work out the store from the riddle, then direct {D} there. Do not say the answer out loud in the car — only the directions.',
+ fieldTask:'Find the oldest thing in the store. Point, do not touch. Say FOUND IT out loud.',
+ drvTask:'Drive where {C} tells you. Do not ask what the mission is.'
 },
 {
- n:'📡', kick:'The Wrist Line', title:'Watches On',
- where:'Two Apple Watches, one phone. The kids are the field radios — {D} is Mission Control. Set this up once, use it all day.',
- cards:[
- {
-  id:'w0', kick:'Setup · 2 minutes', title:'Open the Wrist Line',
-  sub:'Do this before you leave the car. It is the whole trick.',
-  clue:'From now on, {D} does not read the missions out loud. {D} sends them. The watch on your wrist is going to buzz, and whatever it says is the crew\'s next order — and only the person wearing it can read it.',
-  whisper:'Every card in this game has a 📡 BUZZ button. It copies the mission — paste it into Messages and fire it at the watch.',
-  wrist:true,
-  jobs:[
-   {who:'D',role:'Mission Control',t:'Open Messages. Start a thread to whoever is wearing watch two. Send one test message that just says CREW QUEST ONLINE.'},
-   {who:'P',role:'Radio One',t:'When your wrist buzzes, you read it OUT LOUD to the crew. You are the only one who can see it. Do not hand the watch over.'},
-   {who:'H',role:'Radio Two',t:'Same job on your watch. You and {P} take turns being the one who gets the order.'}
-  ],
-  planb:'Watch will not take messages, or the kid cannot read it fast enough? Then {D} reads the mission but has to whisper it to ONE kid, who relays it to the other. Same game, no hardware.'
- },
- {
-  id:'w1', kick:'Watch card', title:'The Step Tax',
-  sub:'The crew owes the day two thousand steps. Watches count.',
-  clue:'Every watch on this crew is already counting. Nobody has to do anything except walk — but at the end of this chapter, the two watch numbers get ADDED TOGETHER, and the crew owes two thousand.',
-  whisper:'Check the step count on the watch face. Add both numbers. Out loud, on fingers, no phone calculator.',
-  jobs:[
-   {who:'P',role:'Radio One',t:'Read your step count off your watch and say the number as loudly as you are allowed to.'},
-   {who:'H',role:'Codebreaker',t:'Add both watch numbers together in your head. Then say how many more the crew still owes.'},
-   {who:'D',role:'Keeper',t:'Do not do the maths for her. Type the total in below when she gets there.'}
-  ],
-  input:{label:'Both counts added together',ph:'e.g. 1,340 + 980 = 2,320'},
-  planb:'No step count showing? Swipe to the Activity face, or just count paces out loud to a hundred and multiply. Rough is fine — the point is the adding.'
- },
- {
-  id:'w2', kick:'Watch card', title:'Three Minutes on the Clock',
-  sub:'Set the timer on the watch. Then run.',
-  clue:'Set a three minute timer on a watch. Before it goes off, the crew has to find four things — and every single person has to bring back at least one. If the timer wins, the crew does it again with four minutes and no complaining.',
-  whisper:'Say "TIMER SET" out loud so everybody hears it start.',
-  chk:{need:4,items:[
-   'Something that does not belong where it is',
-   'Something with a number bigger than fifty on it',
-   'Something that would fit in {P}\'s hand',
-   'Something all three of you agree is beautiful'
-  ]},
-  jobs:[
-   {who:'P',role:'Timekeeper',t:'You set the timer on your watch and you call TIME when it buzzes. Nobody else touches it.'},
-   {who:'H',role:'Spotter',t:'You take the hardest one — the beautiful thing. You have to convince the other two.'},
-   {who:'D',role:'Runner',t:'You do the actual running. Kids point, you fetch.'}
-  ],
-  photo:'All four, before the timer went off',
-  planb:'No timer on the watch? Ask Siri on it, or count to a hundred and eighty out loud. Somebody has to be the clock.'
- },
- {
-  id:'w3', kick:'Watch card', title:'The Heartbeat Race',
-  sub:'Sprint, then read the numbers off your wrists.',
-  clue:'Everybody with a watch: check your heart rate right now and remember the number. Then all three of you sprint to something you can all see — a tree, a post, a sign. As fast as you can go. Then check again.',
-  whisper:'Whoever\'s heart went up the MOST gets to pick the next card. That is the only prize in this game.',
-  jobs:[
-   {who:'P',role:'Radio One',t:'Read your heart number before and after. Both numbers, out loud.'},
-   {who:'H',role:'Codebreaker',t:'Work out who went up the most. Show your working to {D}.'},
-   {who:'D',role:'Runner',t:'You have to actually sprint. Properly. No jogging. The kids will know.'}
-  ],
-  input:{label:'Before and after — everybody',ph:'e.g. 92 → 148, 88 → 139'},
-  planb:'No heart rate on the watch? Everybody puts two fingers on their neck and counts beats for ten seconds instead. Works exactly the same and feels twice as scientific.'
- }]
+ l:'E', stop:1, at:'Inside stop one',
+ title:'The barrel run',
+ riddle:'Your field agent cannot read the labels. You can. Pick three sweets he has never tried, and do not tell him what any of them are.',
+ accept:null,
+ solved:'',
+ tx:'Field agent. Three mystery sweets are coming. You have to eat one bite of each and guess what it is before anybody tells you. No looking at the wrapper.',
+ cmdTask:'Choose three sweets {F} has never had. Keep the names secret. Spend up to fifteen dollars.',
+ fieldTask:'Taste each one and guess what it is BEFORE anyone tells you.',
+ drvTask:'Pay. Say nothing about what any of it is.',
+ money:15
 },
 {
- n:'II', kick:'Chapter Two', title:'Inside the Shop',
- where:'Play this in ANY store you walk into. All of it works in a shop the size of a closet.',
- cards:[
- {
-  id:'c3', key:'E', kick:'The Hunt', title:'Three Impossible Finds',
-  sub:'Each person hunts one thing. Nobody helps until all three are found.',
-  clue:'Split up. You are looking for three very specific things inside this shop, and each of you only gets ONE of them. You cannot help each other until every single person has found theirs.',
-  whisper:'Then bring all three back to one spot and show them off.',
-  jobs:[
-   {who:'P',role:'Spotter',t:'Find something in this store that is OLDER THAN {D}. If you are not sure, ask somebody who works here.'},
-   {who:'H',role:'Spotter',t:'Find something that costs less than one dollar. Actual price on it. No guessing.'},
-   {who:'D',role:'Spotter',t:'Find something and you genuinely cannot tell what it is FOR. Bring it to the kids and let them guess.'}
-  ],
-  input:{label:'What were the three finds?',ph:'Write all three down — you will want them later'},
-  photo:'All three finds in one shot',
-  planb:'Tiny shop with barely anything in it? Then hunt: something red, something soft, something you would never buy. Same rule — one each, no helping.'
- },
- {
-  id:'c4', key:'A', kick:'The Ask', title:'One Real Question',
-  sub:'{P} asks. {H} writes. {D} says nothing at all.',
-  clue:'Somebody works in this shop every single day. They know things about this place that are not written down anywhere. Go find out one of them.',
-  whisper:'Pick ONE question from the list. Ask it properly — say excuse me first, and wait for them to finish.',
-  chk:{need:1,items:[
-   'Ask: "What is the strangest thing anyone has ever bought in here?"',
-   'Ask: "How long have you worked here?"',
-   'Ask: "What is your favourite thing in this whole store?"',
-   'Ask: "What is the oldest thing in this shop?"',
-   'Ask: "Is there anything in here that nobody ever buys?"'
-  ]},
-  jobs:[
-   {who:'P',role:'Voice',t:'YOU ask it. {D} stands behind you and stays completely silent. Look at them when you talk.'},
-   {who:'H',role:'Keeper',t:'Write down their answer word for word. Not what you think they meant — what they actually said.'},
-   {who:'D',role:'Backup',t:'Say nothing. Not one word. Then afterwards tell {P} exactly what he did well.'}
-  ],
-  input:{label:'Their answer, word for word',ph:'Type exactly what they said'},
-  planb:'Shop is slammed and nobody has a second? Then ask the question to the next person who works ANYWHERE — a cashier, a barista, a guy sweeping a sidewalk. Still counts.'
- },
- {
-  id:'c5', key:'M', kick:'Spend · candy stop', title:'The Blind Swap',
-  sub:'Nobody buys anything for themselves. That is the whole game.',
-  clue:'Everybody gets a budget. Everybody picks a treat. But here is the catch — you are not allowed to pick for YOURSELF. You are picking for somebody else in this crew, and you are not allowed to tell them.',
-  whisper:'{D} buys for {P}. {P} buys for {H}. {H} buys for {D}. Keep it secret until you are outside.',
-  money:15,
-  rule:'Under $5 each. You must pick for the person you were assigned — no swapping, no hints, no "do you like this?" Reveal all three outside, at the same time.',
-  jobs:[
-   {who:'P',role:'Picker',t:'You are picking for {H}. Think hard about what SHE actually likes, not what you like.'},
-   {who:'H',role:'Picker',t:'You are picking for {D}. Try to surprise him. Bonus if he makes a face.'},
-   {who:'D',role:'Picker',t:'You are picking for {P}. And you pay for everything without looking at what they chose.'}
-  ],
-  input:{label:'Who got what — and did anyone guess right?',ph:'e.g. the youngest picked...'},
-  photo:'The reveal, outside, all three at once',
-  planb:'Store has nothing under $5? Then everybody picks something they WOULD buy for the other person and just shows them. Free version. Works just as well.'
- }]
+ l:'A', stop:1, at:'Outside stop one',
+ title:'Confirm the year',
+ riddle:'The building has a year on it, or somebody inside knows it. Find out what year this building was built. Your field agent has to be the one who asks a grown-up — you are not allowed to.',
+ accept:['1790','seventeen ninety'],
+ hint:'It is in the seventeen hundreds. Ends in a zero.',
+ solved:'1790 CONFIRMED. That is thirty-six years older than the town of Marlborough having a railroad, and older than almost every state in the country.',
+ tx:'Field agent. Your job is to ask a grown-up who works here one question. Ask them: what year was this building built? Then remember the number and tell your commander.',
+ cmdTask:'You may NOT ask. {F} has to. Type the year in when he reports it.',
+ fieldTask:'Ask a grown-up: "What year was this building built?" Remember the number.',
+ drvTask:'Stand back. Let {F} do the talking, even if it takes a minute.'
 },
 {
- n:'III', kick:'Chapter Three', title:'Out on the Street',
- where:'The sidewalk between anywhere and anywhere. Play while you walk.',
- cards:[
- {
-  id:'c6', key:'W', kick:'Impossible Thing #2', title:'The City That Made One Thing',
-  sub:'Vote first. Then go find the proof with your own eyes.',
-  clue:'Here is the claim. About a hundred years ago this entire city was famous for making one single thing. Thousands of people came here every day to make it. Factories full of it. And every single one of you is wearing two of them, right now, on your feet.',
-  whisper:'Vote, then go looking. There is still evidence on these streets if you know what to look for.',
-  impossible:{
-    claim:'This city used to make ONE thing, and you are all wearing two of them.',
-    answer:true,
-    reveal:'TRUE. Marlborough was a shoe city — whole factories, thousands of workers, shoes shipped out by the trainload. There is still a shoe repair shop on Main Street at number 107. Now go count how many shoes the three of you are wearing between you.'
-  },
-  jobs:[
-   {who:'P',role:'Voice',t:'Find a grown-up who works around here and ask them: "Is it true this city used to make shoes?" You ask it. Not {D}.'},
-   {who:'H',role:'Spotter',t:'While {P} is asking, find any shoe you can see that is NOT on a person\'s foot. A window, a sign, a picture — anything.'},
-   {who:'D',role:'Backup',t:'Everybody takes off ONE shoe and stacks all three into a tower. If it stands for five seconds, the crew gets a bonus.'}
-  ],
-  photo:'The three-shoe tower',
-  planb:'Nobody to ask and no shoes in sight? Count how many different shoe COLOURS the crew is wearing, then find one more colour on somebody walking past.'
- },
- {
-  id:'c7', kick:'Walk & Play', title:'Ten Odd Things',
-  sub:'Spot six of these ten. They are everywhere once you look.',
-  clue:'Grown-ups walk past a hundred strange things a day and never see one of them. You are about to see six.',
-  whisper:'Tap each one when the crew agrees you actually found it.',
-  chk:{need:6,items:[
-   'A door that has been bricked or boarded up',
-   'A year carved, stamped, or painted into a building',
-   'A plant growing somewhere a plant should not grow',
-   'An arrow pointing at absolutely nothing',
-   'A face that is not a face — in a window, a car, a wall',
-   'A clock that is wrong or has stopped',
-   'A door that is much too small for a grown-up',
-   'Something that has been put back upside down',
-   'A sign with a spelling mistake on it',
-   'An animal that is not a real animal'
-  ]},
-  jobs:[
-   {who:'P',role:'Spotter',t:'You call them out. Shout "ODD THING!" every time and point.'},
-   {who:'H',role:'Judge',t:'You decide whether it really counts. Your ruling is final and {D} may not argue.'},
-   {who:'D',role:'Keeper',t:'Tap them in. Walk slower than you want to.'}
-  ],
-  photo:'The single weirdest thing you found',
-  planb:'Six is the target, not the law. Four is a good haul. Move on when the crew gets bored — that is allowed.'
- },
- {
-  id:'c8', kick:'Walk & Play', title:'The Alphabet Raid',
-  sub:'Twelve letters, from signs, plates, windows, anything.',
-  clue:'Every letter of the alphabet is hiding somewhere on this street. Hunt down twelve of them.',
-  whisper:'First letter of a shop name, a licence plate, a street sign, a manhole cover. Manhole covers are worth bragging about.',
-  abc:true,
-  jobs:[
-   {who:'P',role:'Spotter',t:'Start with the letters you own — P for {P}, H for {H}, D for {D}. Then go hunting.'},
-   {who:'H',role:'Reader',t:'Read every sign out loud as you pass it. Out loud, properly, in your announcer voice.'},
-   {who:'D',role:'Keeper',t:'Tap them in and keep walking. Let the kids set the pace.'}
-  ],
-  planb:'Stuck on the last few? X, Q and Z are almost always on a licence plate. Go look at a parking lot.'
- },
- {
-  id:'c9', key:'O', kick:'Spend · $10', title:'The Kindness Drop',
-  sub:'The only mission where you leave something behind.',
-  clue:'Every other card today has been about FINDING something. This one is the opposite. You are going to leave something behind, and then you are going to walk away without waiting to be thanked.',
-  whisper:'This is the one they will still remember next year. Do not rush it.',
-  money:10,
-  rule:'The crew picks ONE, and all three have to agree: (a) pay for the next person in line, (b) buy something from the quietest shop on the street — the one nobody is walking into, or (c) write a thank-you note and hand it to somebody working.',
-  jobs:[
-   {who:'P',role:'Artist',t:'You draw the note. Big, colourful, and it does NOT have to be neat. Sign your name at the bottom.'},
-   {who:'H',role:'Writer',t:'You decide what it says. Read it to the crew first. Then YOU hand it over.'},
-   {who:'D',role:'Keeper',t:'You pay and you do not explain why to anybody. Afterwards ask them how it felt — then actually be quiet and listen.'}
-  ],
-  input:{label:'What did the crew do, and why that one?',ph:'Write it down. This is the one you will want to read again.'},
-  photo:'The note, before you gave it away',
-  planb:'Nobody in line, no shop feels right? Then buy one thing from the next person you find working alone, and tell them out loud they are doing a good job. That absolutely counts.'
- }]
+ l:'M', stop:2, at:'On the way to stop two',
+ title:'Decode the next location',
+ riddle:'Eighteen holes. But no grass, no sky, no wind — because the whole course is INSIDE a greenhouse, surrounded by plants and trees and rock paths. They also make more than forty flavours of ice cream on site. It is a farm. What is it called?',
+ accept:['trombetta','trombettas','trombetta\'s','trombettas farm','trombetta\'s farm'],
+ hint:'An Italian family name. Starts with T.',
+ solved:'TROMBETTA\'S FARM, 655 Farm Rd. Indoor mini golf inside a greenhouse. Direct the driver.',
+ tx:'Field agent. Next target has eighteen holes of mini golf, indoors, inside a giant greenhouse. Your job when you get there is to find one plant taller than your commander.',
+ cmdTask:'Solve it, then navigate {D} there. Still no spoilers.',
+ fieldTask:'Find a plant taller than {C}. Stand next to it to prove it.',
+ drvTask:'Drive. Still no questions.'
 },
 {
- n:'IV', kick:'Chapter Four', title:'Out in the Wild',
- where:'Ghiloni Park (Concord Rd — playground, splash pad, huge open space) or the Assabet River Rail Trail. Any patch of green works.',
- cards:[
- {
-  id:'c10', key:'R', kick:'Impossible Thing #3', title:'The Path That Crosses Itself',
-  sub:'Vote, then go stand on the evidence.',
-  clue:'Here is the claim. There is a path near here — flat, paved, you could ride a scooter on it — that crosses the SAME river five separate times. Not five rivers. One river. Five times. And part of it runs over an iron railway bridge that trains used to thunder across.',
-  whisper:'Vote first. Then go find water and stand next to it.',
-  impossible:{
-    claim:'There is a path near here that crosses the same river FIVE times.',
-    answer:true,
-    reveal:'TRUE. The Assabet River Rail Trail runs 5.6 paved miles through Marlborough and Hudson on an old railway line, and it crosses the Assabet River five separate times — including over a restored wrought-iron railroad bridge. It is flat the whole way, because trains do not like hills.'
-  },
-  jobs:[
-   {who:'P',role:'Spotter',t:'Find moving water. Any moving water — a river, a stream, a drain, a puddle running downhill.'},
-   {who:'H',role:'Codebreaker',t:'Figure out which way the water is going, then find something to float and prove it.'},
-   {who:'D',role:'Backup',t:'Ask them: why would anyone build a path that crosses the same river five times? Best theory wins.'}
-  ],
-  photo:'The crew and the water',
-  planb:'No trail today, no river? A puddle counts. A storm drain counts. Anywhere water is going somewhere, this card works.'
- },
- {
-  id:'c11', kick:'The Hunt', title:'The Nature Five',
-  sub:'Five finds. Nobody may claim two.',
-  clue:'Five things are hiding out here. Nobody is allowed to find more than two of them, so you are going to have to actually help each other.',
-  whisper:'Say them out loud as you find them so nobody doubles up.',
-  chk:{need:5,items:[
-   'Something that makes a sound when you touch it',
-   'Something older than {H}',
-   'Something alive that is not a plant and not a person',
-   'Something exactly the same colour as somebody\'s shirt',
-   'Something perfectly round that nobody made'
-  ]},
-  jobs:[
-   {who:'P',role:'Spotter',t:'You get first pick. Choose whichever one looks most fun and go get it.'},
-   {who:'H',role:'Spotter',t:'You take the hardest one left. On purpose.'},
-   {who:'D',role:'Backup',t:'You get whatever nobody wanted. And you carry everything.'}
-  ],
-  photo:'All five, lined up on the ground',
-  planb:'Middle of a parking lot? Every one of these still works. Round thing: a bottle cap, a stone, a bubble.'
- },
- {
-  id:'c12', kick:'Dare', title:'The Statue Standoff',
-  sub:'Pure silliness. Ninety seconds. Do it anyway.',
-  clue:'Everybody freezes. Completely. The last person still frozen wins nothing at all, because this crew does not do winning — but they do get to choose the music in the car.',
-  whisper:'{D} is not allowed to make anybody laugh. {D} will try anyway.',
-  chk:{need:3,items:[
-   'Everybody froze for a full thirty seconds',
-   'Somebody made somebody else laugh',
-   'A total stranger noticed and reacted'
-  ]},
-  jobs:[
-   {who:'P',role:'Voice',t:'You call FREEZE and you call UNFREEZE. You are in charge of time.'},
-   {who:'H',role:'Judge',t:'You decide who moved first. No appeals.'},
-   {who:'D',role:'Backup',t:'Freeze in the most ridiculous position you can hold. Commit fully.'}
-  ],
-  photo:'Three statues',
-  planb:'Too self-conscious in public? Do it in the car park, or do it sitting down. Still counts.'
- }]
+ l:'W', stop:2, at:'At stop two',
+ title:'The blind flavour',
+ riddle:'Forty flavours. Your field agent picks one WITHOUT being told what any of them are — you read the board and describe one flavour to him using only colours and feelings. No naming it.',
+ accept:null,
+ solved:'',
+ tx:'Field agent. Your commander is going to describe an ice cream to you without telling you what it is. You have to decide from the description alone. Trust her.',
+ cmdTask:'Describe one flavour to {F} using only colours and feelings. Never say its name. Spend up to twenty-five dollars.',
+ fieldTask:'Choose from the description alone. No peeking at the board.',
+ drvTask:'Pay, and order the same thing {F} picked. Solidarity.',
+ money:25
 },
 {
- n:'V', kick:'Chapter Five', title:'The Arcade',
- where:'Apex Entertainment, 21 Apex Dr — arcade, trampolines, go-karts. $10 each on the game card.',
- cards:[
- {
-  id:'c13', key:'K', kick:'Spend · $10 each', title:'The Last Game',
-  sub:'Ten dollars each on the arcade card. One game all three.',
-  clue:'Everybody gets ten dollars on the arcade card. Spend it however you want, on whatever you want. But before anybody goes home, all three of you have to play ONE game together. Same game, same time, all three of you.',
-  whisper:'Nobody leaves until the together-game happens. That is the only rule at Apex.',
-  money:0,
-  rule:'Ten dollars each on the card. Then one game, all three of you, chosen unanimously. Losing it together counts as winning it.',
-  jobs:[
-   {who:'P',role:'Voice',t:'You choose the game all three of you play together. {H} and {D} have to say yes.'},
-   {who:'H',role:'Keeper',t:'Work out how many games ten dollars actually buys. Out loud, before anybody swipes.'},
-   {who:'D',role:'Backup',t:'Go round the circle. Each person names ONE thing they are glad the other two did today. Nobody eats until all three have said it.'}
-  ],
-  input:{label:'What each person was glad the others did',ph:'Write down all three. You will want this in ten years.'},
-  photo:'The whole crew, last shot of the day',
-  planb:'Apex mobbed, or the queue for the go-karts is brutal? Altitude Trampoline Park is at the exact same address — bounce instead. Or the Apex Kids zone, which is built for ages 2 to 12 and is all {P}\'s. The together-game rule still stands wherever you end up.'
- }]
+ l:'O', stop:2, at:'At stop two',
+ title:'Eighteen holes, one score',
+ riddle:'Play the course. There is only ONE score card and it belongs to the crew, not to any person. Every stroke anybody takes counts against the same number.',
+ accept:null,
+ solved:'',
+ tx:'Field agent. Mini golf. Important — there is only one score for the whole crew. If you do badly, everybody did badly. If you do well, everybody did well. There is no beating anybody today.',
+ cmdTask:'Keep the single crew score. Say it out loud after every hole.',
+ fieldTask:'Play. Cheer for the other two as loudly as for yourself.',
+ drvTask:'Take the hardest shot on every hole. You are the grown-up.'
+},
+{
+ l:'R', stop:3, at:'On the way to stop three',
+ title:'Final coordinates',
+ riddle:'Go-karts on an indoor track. Laser tag over two floors. Thirty lanes of bowling. Sixty-plus arcade machines. And a trampoline park sharing the exact same front door. One hundred and fifty thousand square feet. What is the name of the place?',
+ accept:['apex','apex entertainment'],
+ hint:'It means the very top of something. Four letters.',
+ solved:'APEX ENTERTAINMENT, 21 Apex Dr. Altitude Trampoline Park is the same address. Take the driver there.',
+ tx:'Field agent. Final target. Go-karts, laser tag, bowling, trampolines, and sixty arcade machines. You get ten dollars on a card. But there is one last rule coming.',
+ cmdTask:'Decode it and navigate. Last drive of the day.',
+ fieldTask:'Nothing yet. Save your energy.',
+ drvTask:'Drive where told. You are nearly off duty.'
+},
+{
+ l:'K', stop:3, at:'At stop three',
+ title:'The last rule',
+ riddle:'Ten dollars each. Spend it however you like. But before anybody goes home, all three of you must play ONE game together. Same machine, same moment, all three.',
+ accept:null,
+ solved:'',
+ tx:'Field agent. Final order. Ten dollars is yours, spend it how you want. But nobody leaves until all three of you play one game together at the same time. You get to choose which game. Your commander and your driver have to say yes.',
+ cmdTask:'Ten dollars each on the card. {F} chooses the together-game. You have to agree to it.',
+ fieldTask:'YOU choose the one game all three play together. Choose well.',
+ drvTask:'Play it. Properly. No phone in your hand.',
+ money:60
 }];
 
-/* keystone letters, in order — they spell the point of the whole game */
-var KEYS=[];
-CHAPTERS.forEach(function(ch){ch.cards.forEach(function(c){if(c.key)KEYS.push(c);});});
-
-/* =========================================================
-   RE-ROLL POOL. If a card gets a flat no, it is swapped for
-   one of these instead of being argued about. Every one works
-   anywhere — a shop, a kerb, a car park, a field — and keeps
-   the same three-job shape so the keystone is still earnable.
-   ========================================================= */
-var REROLLS=[
-{title:'The Colour Order',
- clue:'Somebody picks a colour out loud. Right now. Then all three of you have sixty seconds to find that exact colour on something nobody expected.',
- whisper:'The person who picked the colour is not allowed to find one. They just judge.',
- jobs:[{who:'P',role:'Voice',t:'You pick the colour and you say it loud. Then you judge everybody else\'s.'},
-       {who:'H',role:'Spotter',t:'Find the colour somewhere genuinely surprising. Not clothes. Too easy.'},
-       {who:'D',role:'Spotter',t:'You have to find it too, and you are not allowed to use anything you are wearing.'}]},
-{title:'Twenty Questions, Backwards',
- clue:'One person picks a thing they can actually see right now and keeps it secret. Everybody else has twenty yes-or-no questions to work out what it is.',
- whisper:'It has to be visible from where you are standing. No cheating with imaginary dinosaurs.',
- jobs:[{who:'H',role:'Keeper',t:'You pick the thing and you keep a straight face. Answer only yes or no.'},
-       {who:'P',role:'Voice',t:'You ask first and you ask the most questions. Anything you want, as long as it is a yes-or-no.'},
-       {who:'D',role:'Backup',t:'Count the questions out loud. Do not help {P}. Genuinely do not help him.'}]},
-{title:'The Compliment Raid',
- clue:'Three strangers. Three real compliments. Nice shoes, cool dog, great hat — but it has to be true, and you have to say it like you mean it.',
- whisper:'If somebody freezes up, the crew does it together as one voice. That counts.',
- jobs:[{who:'P',role:'Voice',t:'You go first. Pick somebody friendly-looking and say the nice thing.'},
-       {who:'H',role:'Voice',t:'You go second. You have to pick somebody totally different from who {P} picked.'},
-       {who:'D',role:'Backup',t:'You go last, and you have to make it the least smooth one. On purpose. Let the kids win this.'}]},
-{title:'Guess What It Costs',
- clue:'Everybody picks one thing and guesses the price before anybody looks. Closest guess without going over wins nothing at all, because this crew does not do winning.',
- whisper:'Say your guesses out loud in order — youngest first — then check.',
- jobs:[{who:'P',role:'Spotter',t:'You choose the thing everybody guesses on. Pick something weird.'},
-       {who:'H',role:'Codebreaker',t:'You guess second and you have to say WHY you guessed that number.'},
-       {who:'D',role:'Keeper',t:'You guess last, and you are not allowed to guess a sensible number.'}]},
-{title:'The Sound Map',
- clue:'Everybody shuts up and closes their eyes for thirty seconds. Then each person names a sound the other two did not hear.',
- whisper:'Thirty full seconds. It is longer than you think and that is the point.',
- jobs:[{who:'P',role:'Timekeeper',t:'You count to thirty out loud at the start, then everybody goes quiet.'},
-       {who:'H',role:'Keeper',t:'You go last, so you have to find a sound nobody else claimed. Hardest job here.'},
-       {who:'D',role:'Backup',t:'Actually close your eyes. Actually be quiet. Phone away.'}]},
-{title:'Copy the Stranger',
- clue:'Pick somebody walking past — kindly, not meanly — and the whole crew has to walk exactly like them for ten steps. Then switch to a different person.',
- whisper:'Nobody points. Nobody laughs at them. You laugh at each other.',
- jobs:[{who:'H',role:'Spotter',t:'You choose who the crew copies. Choose fast, before they walk off.'},
-       {who:'P',role:'Voice',t:'You call the switch. Shout SWITCH and everybody changes to a new person.'},
-       {who:'D',role:'Backup',t:'Commit completely. If you are embarrassed you are doing it right.'}]},
-{title:'The Alphabet Snack',
- clue:'Go through the alphabet naming a food for each letter. Nobody may repeat, and if you get stuck the whole crew is stuck — you go back and help.',
- whisper:'This one is built for walking. Play it the whole way to the car.',
- jobs:[{who:'P',role:'Voice',t:'You start at A and you go first every round.'},
-       {who:'H',role:'Voice',t:'You take the hard letters — Q, X, Z. That is your job on purpose.'},
-       {who:'D',role:'Backup',t:'When somebody sticks, you do not answer for them. You give one clue and shut up.'}]},
-{title:'Best Thing / Worst Thing',
- clue:'Everybody names the best thing they have seen in the last ten minutes, and the single worst thing. Then the crew votes on whose worst thing was the funniest.',
- whisper:'Nobody is allowed to say "I do not know." Make something up if you have to.',
- jobs:[{who:'H',role:'Voice',t:'You go first and you have to be specific. Not "the sky." An actual thing.'},
-       {who:'P',role:'Judge',t:'You decide whose worst thing was funniest. Your ruling is final.'},
-       {who:'D',role:'Backup',t:'Yours has to be genuinely honest. The kids will know if it is not.'}]},
-{title:'The Shadow Hunt',
- clue:'Find a shadow shaped like an animal. Then find one shaped like a person who is not there. Then get all three of your shadows into one shape.',
- whisper:'Works in sun, works under a streetlight, works in a shop window.',
- jobs:[{who:'P',role:'Spotter',t:'You find the animal one. Say what animal it is before anyone else does.'},
-       {who:'H',role:'Spotter',t:'You find the person-shaped one, and you have to say who it looks like.'},
-       {who:'D',role:'Backup',t:'You arrange the three-shadow shape. Kids decide if it is good enough.'}]},
-{title:'One Word Each',
- clue:'Tell a story about where you are standing — but each person only says ONE word at a time, going round and round.',
- whisper:'It will be nonsense. That is the entire point. Keep going until it makes somebody laugh.',
- jobs:[{who:'P',role:'Voice',t:'You say the first word. Make it a strange one.'},
-       {who:'H',role:'Voice',t:'You are not allowed to fix the story when it goes wrong. Make it worse.'},
-       {who:'D',role:'Backup',t:'You have to keep a completely straight face the whole time.'}]},
-{title:'The Number Hunt',
- clue:'Find the numbers one through ten, in order, out in the real world. Signs, doors, prices, plates. You cannot take seven before you have six.',
- whisper:'Perfect for walking. Terrible if you are in a hurry, so do not be.',
- jobs:[{who:'P',role:'Spotter',t:'You call out every number you find. All of them. Loudly.'},
-       {who:'H',role:'Keeper',t:'You keep track of which number the crew is on and you do not let anyone skip.'},
-       {who:'D',role:'Backup',t:'You walk slower than you want to and you let them find it.'}]},
-{title:'Would You Rather, Local Edition',
- clue:'Everybody invents a would-you-rather using only things you can see right now. Then everybody has to answer and say why.',
- whisper:'The stranger the better. No boring ones.',
- jobs:[{who:'H',role:'Voice',t:'You invent the first one and it has to use two things you can point at.'},
-       {who:'P',role:'Voice',t:'You invent the second, and yours has to be ridiculous.'},
-       {who:'D',role:'Backup',t:'You have to actually answer honestly. No dodging.'}]}
-];
-
-/* Short, wrist-sized versions. A watch shows about this much before you
-   have to scroll, and a 6-year-old will not scroll. Keep them punchy. */
-var WATCHTEXT={
- c1:'📡 ORDER 1: A car millionaire moved a whole STORE to Marlborough using OXEN. TRUE or FALSE? Say your vote out loud.',
- c2:'📡 CREW QUEST ONLINE. You are SPOTTER. Your eyes are the best on this crew.',
- w0:'📡 CREW QUEST ONLINE. Read every order out loud. Do not hand over the watch.',
- w1:'📡 ORDER: Read your STEP COUNT off your watch. Shout the number.',
- w2:'📡 ORDER: Set a 3 MINUTE TIMER. Find 4 things before it buzzes. GO.',
- w3:'📡 ORDER: Check your heart number. Then SPRINT. Then check again.',
- c3:'📡 ORDER: Find ONE thing in this shop older than Dad. No helping until everyone has theirs.',
- c4:'📡 ORDER: Ask someone who works here — "What is the strangest thing anyone ever bought in here?" You ask. Not Dad.',
- c5:'📡 SECRET ORDER: Pick a treat under $5 for SOMEONE ELSE in the crew. Tell nobody. Reveal outside.',
- c6:'📡 ORDER 2: This city used to make ONE thing and you are wearing two of them RIGHT NOW. TRUE or FALSE?',
- c7:'📡 ORDER: 10 odd things are hiding on this street. Find 6. Shout ODD THING every time.',
- c8:'📡 ORDER: Hunt 12 letters. Signs, plates, windows. Manhole covers count double.',
- c9:'📡 SECRET ORDER: This one is not about finding. It is about LEAVING something behind. Ask Dad.',
- c10:'📡 ORDER 3: There is a path near here that crosses the SAME river 5 times. TRUE or FALSE?',
- c11:'📡 ORDER: 5 things out here. Nobody may claim more than 2. You will have to help each other.',
- c12:'📡 ORDER: FREEZE. Everybody. Thirty seconds. Do not laugh.',
- c13:'📡 FINAL ORDER: $10 each on the arcade card. Then ONE game, all three of you, together. Nobody leaves before that.'
-};
-
-var WILD=[
- 'Everybody walks like a pigeon until the next crossing. Full commitment or it does not count.',
- 'For one whole block every person must talk in a British accent. No exceptions, {D}.',
- 'Nobody may say the word "the" for two minutes. {D} always loses this one.',
- 'Everybody must high-five the same lamppost at the same time.',
- 'Pick a window. Everybody does their best impression of something inside it.',
- 'Walk backwards for ten steps. {D} spots so nobody falls off a kerb.',
- 'Whisper everything until the next corner. Everything.',
- 'Invent a code word right now. Say it every time you see a red car.',
- 'Compliment a stranger\'s dog. If there is no dog, wait for a dog.',
- 'Name three things you can smell right now. {P} goes first.',
- 'Hop on one foot to the next tree. Switch feet halfway.',
- 'Everybody makes the exact same face. {H} chooses the face.',
- 'Take turns leading for twenty steps. The leader may walk any way they like.',
- 'Find something on this street older than {D}. You have sixty seconds.',
- 'Everybody swaps jobs right now. {P} is the Keeper until the next card.',
- 'Say one true nice thing about the person on your left. Right now. Out loud.',
- 'The next thing anybody says has to rhyme. Go.',
- 'Everybody find a stick, a stone and a leaf. Fastest crew ever assembled.'
-];
-var SHAKES=['Double high-five','Elbow bump','Spin around','Robot arms','Fish handshake','Explosion fingers',
- 'Secret snap','Knee tap','Wiggle hands','Silent scream','Rocket launch','Slow-motion five'];
-var CHEERS=['CREW POINT!','THAT IS HOW IT IS DONE','LOCKED IN','NOBODY DID THAT ALONE','TEAM WIN',
- 'THE CREW DELIVERS','STAMPED','ONE MORE FOR THE CREW'];
-
-function allCards(){var a=[];CHAPTERS.forEach(function(ch){ch.cards.forEach(function(c){a.push(c);});});return a;}
-function cardById(id){var f=null;allCards().forEach(function(c){if(c.id===id)f=c;});return f;}
-
-/* A card the crew re-rolled is replaced by a pool card but keeps its
-   id, keystone letter and money rules, so nothing downstream breaks. */
-function effCard(id){
-  var base=cardById(id);if(!base)return null;
-  var r=S.reroll[id];
-  if(r===undefined||r===null||!REROLLS[r])return base;
-  var alt=REROLLS[r];
-  return {id:base.id,key:base.key,kick:'Re-rolled',title:alt.title,sub:'The crew swapped the original for this one.',
-    clue:alt.clue,whisper:alt.whisper,jobs:alt.jobs,money:base.money,rule:base.rule,
-    planb:'Not this one either? Re-roll again, or skip it. Both are allowed and neither costs the crew anything.',
-    rerolled:true};
-}
-/* {H} and {P} inside job text point at the OTHER kid, so a swap has to
-   flip the tokens too or the instructions address the wrong child. */
-function flipTokens(t){return String(t).replace(/\{H\}/g,'').replace(/\{P\}/g,'{H}').replace(//g,'{P}');}
-function effJobs(c,id){
-  var js=c.jobs.map(function(j){return {who:j.who,role:j.role,t:j.t};});
-  if(S.swap[id])js.forEach(function(j){
-    if(j.who==='H'){j.who='P';j.t=flipTokens(j.t);}
-    else if(j.who==='P'){j.who='H';j.t=flipTokens(j.t);}
-    else j.t=flipTokens(j.t);
-  });
-  return js;
-}
-function isCleared(id){return !!S.done[id]||!!S.skipped[id];}
-
-
-/* =========================================================
-   THE ROUTE. Real Marlborough places, ordered so the day
-   builds: a weird old store, then downtown, then somewhere
-   to run, then ice cream. Each opens in Maps.
-   ========================================================= */
 var STOPS=[
-{n:1,name:'Wayside Country Store',addr:'1015 Boston Post Rd E, Marlborough',
- why:'The candy stop. A store built in 1790 that Henry Ford BOUGHT and dragged here behind OXEN in 1928 — you are standing on the original pine floors. Penny candy, barrels of it. Card one is a true-or-false vote about this exact building, so make them vote in the car before you pull in.',
- go:'Candy first · about $15', budget:15},
-{n:2,name:"Trombetta's Farm",addr:'655 Farm Rd, Marlborough',
- why:'Eighteen holes of mini golf INDOORS, inside a giant greenhouse full of plants, trees and rock paths. Then ice cream made on site that day, more than forty flavours. Rule: everybody orders a flavour nobody in the crew has ever had.',
- go:'Mini golf + ice cream · about $25', budget:25},
-{n:3,name:'Apex Entertainment & Altitude',addr:'21 Apex Dr, Marlborough',
- why:'The finale, and both places share one address. Trampolines, ropes course, laser tag, bowling, go-karts, and a 60-plus game arcade. There is an Apex Kids zone built for ages 2 to 12, so the youngest gets their own jungle gym. Everybody gets $10 on the arcade card — spend it however you want, but you have to play one game all three together.',
- go:'Bounce + $10 each on games · about $60', budget:60}
+{n:1,name:'Wayside Country Store',addr:'1015 Boston Post Rd E, Marlborough'},
+{n:2,name:"Trombetta's Farm",addr:'655 Farm Rd, Marlborough'},
+{n:3,name:'Apex Entertainment',addr:'21 Apex Dr, Marlborough'}
 ];
-
-function renderStops(){
-  var host=document.getElementById('stopList'); if(!host)return;
-  host.innerHTML='';
-  STOPS.forEach(function(st){
-    var done=!!S.stops[st.n];
-    var b=document.createElement('button');
-    b.className='stop'+(done?' done':'');
-    b.innerHTML='<div class="snum">'+(done?'✓':st.n)+'</div>'+
-      '<div class="sb"><div class="sname">'+esc(st.name)+'</div>'+
-      '<div class="saddr">'+esc(st.addr)+'</div>'+
-      '<div class="swhy">'+esc(st.why)+'</div>'+
-      '<span class="sgo">📍 '+esc(st.go)+' — tap to open Maps</span></div>';
-    b.onclick=function(ev){
-      if(ev.target.closest('.snum')){ toggleStop(st.n); return; }
-      openMaps(st);
-    };
-    host.appendChild(b);
-  });
-}
-function toggleStop(n){ S.stops[n]=!S.stops[n]; save(); buzz(18); renderStops(); }
-function openMaps(st){
-  var q=encodeURIComponent(st.name+', '+st.addr);
-  buzz(14);
-  window.open('https://maps.apple.com/?q='+q,'_blank');
-  toast('Opening Maps for '+st.name+'. Tap the number when you have been.');
-}
-function speakRoute(btn){
-  var t='Here is the route. ';
-  STOPS.forEach(function(st){ t+='Stop '+st.n+'. '+st.name+'. '+st.go+'. '; });
-  t+='Get in the car. First stop is the candy store.';
-  speak(t,btn);
-}
 
 /* =========================================================
    RENDER
    ========================================================= */
-function purseLeft(){return Math.max(0,100-(S.spent||0));}
-function progress(){
-  var keys=0;KEYS.forEach(function(c){if(isCleared(c.id))keys++;});
-  var all=allCards(),d=0;all.forEach(function(c){if(isCleared(c.id))d++;});
-  var pct=Math.round((d/all.length)*90)+Math.min(10,(S.extras||0));
-  return{keys:keys,done:d,total:all.length,pct:Math.min(100,pct)};
-}
+function purse(){return Math.max(0,100-(S.spent||0));}
 
-function renderHQ(){
-  document.getElementById('crewName').textContent=S.crew||'Tap Base Camp to name us';
-  document.getElementById('purse').textContent=purseLeft();
-  var p=progress();
-  document.getElementById('meterFill').style.width=p.pct+'%';
-  document.getElementById('meterPct').textContent=p.pct+'%';
-  var strip=document.getElementById('strip');strip.innerHTML='';
-  KEYS.forEach(function(c){
-    var on=isCleared(c.id);
+function renderHead(){
+  document.getElementById('cmdName').textContent=S.cmd?S.cmd:'— set names below —';
+  document.getElementById('roleCmd').textContent=C();
+  document.getElementById('roleField').textContent=F();
+  document.getElementById('purse').textContent='$'+purse();
+  var b=document.getElementById('segbar');b.innerHTML='';
+  M.forEach(function(m,i){
     var d=document.createElement('div');
-    d.className='tile'+(on?' on':'');d.textContent=c.key;
-    if(S.skipped[c.id]&&!S.done[c.id])d.style.opacity='.62';
-    d.setAttribute('aria-label',c.key+(on?' earned':' not yet earned'));
-    strip.appendChild(d);
+    d.className='seg'+(S.tasks['done_'+i]?' on':'');
+    b.appendChild(d);
   });
+  document.getElementById('classified').innerHTML=
+    '⚠ '+esc(D().toUpperCase())+' IS NOT CLEARED FOR THIS SCREEN. '+esc(C())+
+    ' reads it, nobody else. '+esc(D())+' only finds out where you are going when '+esc(C())+' says so.';
+  document.getElementById('setupPanel').style.display=S.cmd?'none':'block';
 }
 
-function renderChapters(){
-  var host=document.getElementById('chapters');host.innerHTML='';
-  CHAPTERS.forEach(function(ch){
-    var sec=document.createElement('section');sec.className='chap';
-    var html='<div class="chaphead"><div class="chapnum">'+ch.n+'</div><div class="ct">'+
-      '<div class="ck">'+esc(ch.kick)+'</div><h3>'+esc(ch.title)+'</h3></div></div>'+
-      '<p class="chapwhere">'+esc(N(ch.where))+'</p>';
-    ch.cards.forEach(function(base){
-      var c=effCard(base.id);
-      var done=!!S.done[c.id],skip=!!S.skipped[c.id];
-      var chips='';
-      if(skip)chips+='<span class="chip skip">Skipped</span>';
-      if(c.rerolled)chips+='<span class="chip rr">Re-rolled</span>';
-      if(c.key)chips+='<span class="chip key">Keystone '+c.key+'</span>';
-      if(c.money!==undefined)chips+='<span class="chip money">$ Spend</span>';
-      if(c.photo)chips+='<span class="chip photo">📸</span>';
-      html+='<button class="ccard'+(done?' done':'')+(skip&&!done?' skipped':'')+'" onclick="openCard(\''+c.id+'\')" aria-label="'+esc(c.title)+'">'+
-        '<div class="ccard-in">'+
-          '<div class="kbadge'+(c.key?'':' bonus')+'">'+(done?'✓':(skip?'⏭':(c.key||'◆')))+'</div>'+
-          '<div class="cb"><div class="ck2">'+esc(c.kick)+'</div>'+
-            '<div class="ct2">'+esc(N(c.title))+'</div>'+
-            '<div class="cs">'+esc(N(c.sub))+'</div>'+
-            (chips?'<div class="chips">'+chips+'</div>':'')+
-          '</div></div></button>';
-    });
-    sec.innerHTML=html;host.appendChild(sec);
-  });
-}
-function renderAll(){renderHQ();renderStops();renderChapters();}
-
-/* =========================================================
-   SHEETS
-   ========================================================= */
-var sheet=document.getElementById('sheet'),inner=document.getElementById('sheetInner');
-function openSheet(title,html){
-  inner.innerHTML='<div class="sheet-bar"><button class="x" onclick="closeSheet()" aria-label="Close">✕</button><h2>'+esc(title)+'</h2></div><div class="wrap">'+html+'</div>';
-  sheet.classList.add('open');sheet.scrollTop=0;document.body.style.overflow='hidden';
-}
-function closeSheet(){stopTalking();sheet.classList.remove('open');document.body.style.overflow='';renderAll();}
-
-/* =========================================================
-   BASE CAMP
-   ========================================================= */
-function openBase(){
-  if(!S.shake){S.shake=[pick(SHAKES),pick(SHAKES),pick(SHAKES)];save();}
-  var h='<div class="card"><div class="label" style="color:var(--orange-deep)">Step One</div>'+
-   '<div class="ct2" style="font-size:20px">Name the crew</div>'+
-   '<p style="margin:6px 0 0;font-size:14px;font-weight:600;color:var(--ink-soft)">Everybody has to agree on it. First team decision of the day.</p>'+
-   '<div class="answer" style="margin-top:11px"><input id="crewIn" value="'+esc(S.crew)+'" placeholder="The Sidewalk Sharks"></div>'+
-   '<div class="namerow"><div class="tag">Grown-up</div><input id="nD" value="'+esc(S.names.D)+'"></div>'+
-   '<div class="namerow"><div class="tag">Kid 1</div><input id="nH" value="'+esc(S.names.H)+'"></div>'+
-   '<div class="namerow"><div class="tag">Kid 2</div><input id="nP" value="'+esc(S.names.P)+'"></div>'+
-   '<button class="btn sm" style="margin-top:12px" onclick="saveBase(this)">Lock it in</button></div>'+
-
-  '<div class="card" style="background:var(--teal-lift);color:var(--chalk)">'+
-   '<div class="label" style="color:var(--brass)">Step Two</div>'+
-   '<div class="ct2" style="font-size:20px;color:var(--chalk)">The secret handshake</div>'+
-   '<p style="margin:6px 0 0;font-size:14px;font-weight:600;color:var(--sky)">Three moves, this order. You do it after every single card. Even in front of people. Especially in front of people.</p>'+
-   '<div class="shake"><div class="shakestep"><div class="n">ONE</div><div class="m">'+esc(S.shake[0])+'</div></div>'+
-   '<div class="shakestep"><div class="n">TWO</div><div class="m">'+esc(S.shake[1])+'</div></div>'+
-   '<div class="shakestep"><div class="n">THREE</div><div class="m">'+esc(S.shake[2])+'</div></div></div>'+
-   '<button class="btn ghost sm" style="margin-top:12px" onclick="reshake()">↺ Roll a different handshake</button></div>'+
-
-  '<div class="card" style="background:var(--orange);color:var(--chalk)">'+
-   '<div class="label">Step Three</div><div class="ct2" style="font-size:20px;color:var(--chalk)">The Crew Oath</div>'+
-   '<p class="readaloud" style="margin:9px 0 0;font-size:16.5px;line-height:1.55">Read it out loud. All three of you. At the same time.<br><br>'+
-   '<strong>"We are one crew.<br>Nobody wins alone.<br>Nobody loses alone.<br>If one of us is stuck, all of us are stuck.<br>And we do not go home until we have spent it all."</strong></p></div>'+
-
-  '<div class="card"><div class="label" style="color:var(--orange-deep)">How it works</div>'+
-   '<ul style="margin:9px 0 0;padding-left:18px;font-size:14.5px;font-weight:600;line-height:1.65">'+
-   '<li><strong>There is no winner.</strong> No individual score exists anywhere in this game. One meter, one crew.</li>'+
-   '<li><strong>Cards need all three of you.</strong> A card will not stamp until every job is ticked.</li>'+
-   '<li><strong>Jobs rotate.</strong> The six-year-old does the talking sometimes. That is deliberate.</li>'+
-   '<li><strong>Eight keystones spell a word.</strong> Do not tell the kids what it is.</li>'+
-   '<li><strong>Skip anything.</strong> Cards are types of hunt, not places. Nothing dead-ends.</li>'+
-   '<li><strong>$100 total.</strong> Candy stop, mini golf and ice cream, then $10 each on arcade games at the end.</li>'+
-   '</ul></div>';
-  openSheet('Base Camp',h);
-}
-function saveBase(b){
-  S.crew=document.getElementById('crewIn').value.trim();
-  S.names.D=document.getElementById('nD').value.trim()||'Grown-up';
-  S.names.H=document.getElementById('nH').value.trim()||'Kid One';
-  S.names.P=document.getElementById('nP').value.trim()||'Kid Two';
-  save();renderHQ();buzz(20);
-  b.textContent='Locked ✓';b.style.background='var(--good)';b.style.color='var(--chalk)';
-  setTimeout(closeSheet,550);
-}
-function reshake(){S.shake=[pick(SHAKES),pick(SHAKES),pick(SHAKES)];save();openBase();}
-
-/* =========================================================
-   CARD SHEET
-   ========================================================= */
-function openCard(id){
-  var c=effCard(id);if(!c)return;
-  stopTalking();
-  var h='';
-
-  if(c.rerolled)h+='<div class="banner">🎲 Re-rolled. The original card is still in the deck — tap re-roll again to bring back a different one.</div>';
-  if(S.swap[id])h+='<div class="banner swap">🔄 Jobs swapped — '+esc(S.names.P)+' and '+esc(S.names.H)+' have traded roles on this card.</div>';
-  if(S.skipped[id])h+='<div class="banner">⏭ Skipped. The crew agreed to move on'+(c.key?' and kept the '+c.key+'.':'.')+' Tap Skip again to un-skip it.</div>';
-
-  h+='<div class="clue"><div class="label">📜 The order</div><p>'+esc(N(c.clue))+'</p>'+
-     '<div class="whisper">'+esc(N(c.whisper))+'</div></div>';
-
-  h+='<button class="speak" id="speakBtn" onclick="speakCard(\''+id+'\',this)">'+
-     '<span class="wave"><i></i><i></i><i></i><i></i></span> READ IT OUT LOUD</button>';
-
-  if(WATCHTEXT[id]){
-    h+='<button class="buzz" id="buzzBtn" onclick="buzzToWatch(\''+id+'\')">📡 &nbsp;BUZZ IT TO THE WATCH</button>';
-  }
-
-  if(c.wrist){
-    h+='<div class="wrist"><div class="label">How the Wrist Line works</div><ol>'+
-      '<li>Tap <strong>📡 BUZZ IT TO THE WATCH</strong> on any card. The order copies to the clipboard.</li>'+
-      '<li>Open <strong>Messages</strong>, pick the kid wearing the watch, paste, send.</li>'+
-      '<li>Their wrist buzzes. They read it out loud. Nobody else has seen it.</li>'+
-      '<li>Next card, send it to the <em>other</em> kid. They take turns being the radio.</li>'+
-      '</ol><p style="margin:11px 0 0;font-size:13px;font-weight:600;color:var(--sky);line-height:1.45">'+
-      'Also free on the watch, no setup: <strong>Walkie-Talkie</strong> if both watches have it, the <strong>step count</strong>, the <strong>timer</strong>, and <strong>heart rate</strong>. Three cards below use them.</p></div>';
-  }
-
-  if(c.impossible){
-    h+='<div class="imp"><div class="label">⚖️ Vote before you argue</div>'+
-       '<div class="claim">'+esc(N(c.impossible.claim))+'</div>'+
-       '<div class="tallyrow">'+['P','H','D'].map(function(w){
-         var v=S.tf[id+'_'+w];
-         return '<div class="tally'+(v?' voted':'')+'"><div class="n">'+esc(S.names[w])+'</div><div class="v">'+(v?(v==='T'?'TRUE':'FALSE'):'—')+'</div></div>';
-       }).join('')+'</div>';
-    ['P','H','D'].forEach(function(w){
-      var v=S.tf[id+'_'+w];
-      h+='<div style="margin-top:11px"><div class="label" style="color:var(--sky)">'+esc(S.names[w])+' votes</div>'+
-         '<div class="tf"><button class="tfbtn t'+(v==='T'?' on':'')+'" onclick="castTF(\''+id+'\',\''+w+'\',\'T\')">TRUE</button>'+
-         '<button class="tfbtn f'+(v==='F'?' on':'')+'" onclick="castTF(\''+id+'\',\''+w+'\',\'F\')">FALSE</button></div></div>';
-    });
-    var allVoted=S.tf[id+'_P']&&S.tf[id+'_H']&&S.tf[id+'_D'];
-    if(S.revealed[id]){
-      var right=0;['P','H','D'].forEach(function(w){if((S.tf[id+'_'+w]==='T')===c.impossible.answer)right++;});
-      h+='<div class="reveal"><div class="revealbox">'+
-         '<div class="verdict">'+(c.impossible.answer?'IT IS TRUE.':'IT IS FALSE.')+'</div>'+
-         '<p>'+esc(N(c.impossible.reveal))+'</p>'+
-         '<p style="font-weight:900;font-family:Archivo">'+right+' of 3 got it. The crew keeps the point either way.</p></div></div>';
-    }else{
-      h+='<div class="reveal"><button class="btn brass" '+(allVoted?'':'style="opacity:.45;pointer-events:none"')+
-         ' onclick="doReveal(\''+id+'\')">'+(allVoted?'🔓  REVEAL THE ANSWER':'All three must vote first')+'</button></div>';
-    }
-    h+='</div>';
-  }
-
-  if(c.money!==undefined){
-    var sug=c.money===0?purseLeft():c.money;
-    h+='<div class="moneybox"><div class="label">The rule, before anybody spends</div><p>'+esc(N(c.rule))+'</p>'+
-       '<div class="label" style="margin-bottom:6px">Three thumbs up — tap all three</div><div class="votes">'+
-       ['D','H','P'].map(function(w){var on=!!S.votes[id+'_'+w];
-         return '<button class="vote'+(on?' on':'')+'" onclick="toggleVote(\''+id+'\',\''+w+'\')">'+(on?'👍 ':'')+esc(S.names[w])+'</button>';}).join('')+
-       '</div><div class="spendrow"><input id="spend_'+id+'" type="number" inputmode="decimal" placeholder="$'+sug+'" value="'+esc(S.answers['spent_'+id]||'')+'">'+
-       '<button class="vote" style="flex:0 0 130px" onclick="logSpend(\''+id+'\')">Log the spend</button></div>'+
-       '<div style="margin-top:8px;font-size:12.5px;font-weight:800">Purse: $'+purseLeft()+' of $100'+
-       (c.money===0?' — spend every last dollar.':' · suggested here: $'+c.money)+'</div></div>';
-  }
-
-  if(c.chk){
-    var got=chkCount(id);
-    h+='<div style="display:flex;align-items:center;gap:10px;margin:22px 0 2px"><div class="label" style="color:var(--sky);white-space:nowrap">Find '+c.chk.need+'</div>'+
-       '<hr style="flex:1;border:0;border-top:2.5px dashed rgba(142,208,210,.4);margin:0">'+
-       '<div class="label" style="color:var(--brass)">'+got+'/'+c.chk.need+'</div></div>';
-    c.chk.items.forEach(function(it,i){
-      var on=!!S.chk[id+'_'+i];
-      h+='<button class="chk'+(on?' on':'')+'" onclick="toggleChk(\''+id+'\','+i+')"><span class="tick">'+(on?'✓':'')+'</span><span class="t">'+esc(N(it))+'</span></button>';
-    });
-  }
-
-  if(c.abc){
-    h+='<div style="display:flex;align-items:center;gap:10px;margin:22px 0 2px"><div class="label" style="color:var(--sky)">Letter hunt — get 12</div>'+
-       '<hr style="flex:1;border:0;border-top:2.5px dashed rgba(142,208,210,.4);margin:0"></div>'+
-       '<div class="abc" id="abcGrid">'+abcHTML(id)+'</div>'+
-       '<div class="abccount" id="abcCount">'+abcCount(id)+' of 12 found</div>';
-  }
-
-  h+='<div style="display:flex;align-items:center;gap:10px;margin:22px 0 2px"><div class="label" style="color:var(--sky)">Everybody has a job</div>'+
-     '<hr style="flex:1;border:0;border-top:2.5px dashed rgba(142,208,210,.4);margin:0"></div>';
-  effJobs(c,id).forEach(function(j,i){
-    var on=!!S.jobs[id+'_'+i];
-    h+='<div style="display:flex;gap:8px;align-items:flex-start">'+
-       '<button class="job'+(on?' checked':'')+'" style="margin-top:10px" onclick="toggleJob(\''+id+'\','+i+')"><span class="tick">'+(on?'✓':'')+'</span>'+
-       '<span class="jb"><span class="who">'+esc(S.names[j.who])+'</span><span class="role">'+esc(j.role)+'</span>'+
-       '<span class="jtext">'+esc(N(j.t))+'</span></span></button>'+
-       '<button class="earbtn" style="margin-top:10px" aria-label="Read this job out loud" '+
-       'onclick="speak(\''+esc(S.names[j.who]).replace(/'/g,"\\'")+'. \'+CARDJOBS[\''+id+'\']['+i+'],null)">🔊</button></div>';
-  });
-  window.CARDJOBS=window.CARDJOBS||{};
-  window.CARDJOBS[id]=effJobs(c,id).map(function(j){return N(j.t);});
-
-  if(c.input){
-    h+='<div class="answer"><span class="label">'+esc(N(c.input.label))+'</span><textarea rows="2" id="ans_'+id+'" placeholder="'+esc(N(c.input.ph))+'" oninput="saveAns(\''+id+'\')">'+esc(S.answers[id]||'')+'</textarea></div>';
-  }
-  if(c.photo){
-    h+='<div class="photobox">'+(S.photos[id]?'<img src="'+S.photos[id]+'" alt="Crew photo">':'')+
-       '<label class="photo-btn" style="margin-top:'+(S.photos[id]?'10px':'0')+'">📸 '+(S.photos[id]?'Retake':esc(N(c.photo)))+
-       '<input type="file" accept="image/*" capture="environment" onchange="grabPhoto(event,\''+id+'\')"></label></div>';
-  }
-
-  h+='<div class="planb"><div class="label">🛟 Plan B — closed, gone, or not working</div><p>'+esc(N(c.planb))+'</p></div>';
-
-  h+='<div class="ctrls">'+
-     '<button class="ctrl" onclick="doSwap(\''+id+'\')"><span class="ic">🔄</span>SWAP<br>THE KIDS</button>'+
-     '<button class="ctrl warm" onclick="doReroll(\''+id+'\')"><span class="ic">🎲</span>RE-ROLL<br>THIS CARD</button>'+
-     '<button class="ctrl" onclick="doSkip(\''+id+'\')"><span class="ic">⏭</span>'+(S.skipped[id]?'UN-SKIP<br>IT':'SKIP<br>THIS ONE')+'</button>'+
-     '</div>'+
-     '<p class="footnote" style="margin-top:9px;text-align:left">Nobody has to do anything. A flat no is a re-roll or a skip, not an argument — and a skipped keystone still gives the crew its letter.</p>';
-
-  var done=!!S.done[id];
-  h+='<button class="btn'+(done?' teal':'')+'" id="finishBtn" style="margin-top:14px" onclick="finish(\''+id+'\')">'+
-     (done?'✓ Stamped — tap to reopen':'STAMP IT — card complete')+'</button>'+
-     '<p class="footnote" style="margin-top:13px">Do the secret handshake before you tap this. It is the rule.</p>';
-
-  openSheet(N(c.title),h);
-}
-
-/* Wrist Line: copy the wrist-sized order so it can be pasted straight
-   into Messages and fired at a watch. Clipboard API needs a secure
-   context and can reject — fall back to execCommand, then to showing
-   the text so it can always be copied by hand. */
-function buzzToWatch(id){
-  var txt=N(WATCHTEXT[id]||''); if(!txt) return;
-  var b=document.getElementById('buzzBtn');
-  function ok(){
-    buzz([20,40,20,40,20]);
-    if(b){b.classList.add('sent');b.textContent='✓  Copied — paste it into Messages';
-      setTimeout(function(){b.classList.remove('sent');b.innerHTML='📡 &nbsp;BUZZ IT TO THE WATCH';},2600);}
-    toast('Copied. Open Messages → the kid on watch duty → paste → send.');
-  }
-  function fallback(){
-    var ta=document.createElement('textarea');
-    ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0';
-    document.body.appendChild(ta); ta.focus(); ta.select();
-    var done=false; try{ done=document.execCommand('copy'); }catch(e){}
-    document.body.removeChild(ta);
-    if(done) ok(); else { if(b){b.textContent='Copy this: '+txt;} toast('Could not auto-copy — the order is on the button, copy it by hand.'); }
-  }
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(ok).catch(fallback);
-  } else fallback();
-}
-var toastT=null;
-function toast(msg){
-  var t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('on');
-  clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('on');},3400);
-}
-
-function doSwap(id){
-  S.swap[id]=!S.swap[id];save();buzz(20);
-  toast(S.swap[id]?S.names.P+' and '+S.names.H+' have traded jobs on this card.':'Jobs put back the way they were.');
-  openCard(id);
-}
-function doReroll(id){
-  var cur=S.reroll[id],next;
-  do{next=Math.floor(Math.random()*REROLLS.length);}while(REROLLS.length>1&&next===cur);
-  S.reroll[id]=next;
-  /* a re-rolled card starts fresh — old job ticks belonged to a different challenge */
-  cardById(id).jobs.forEach(function(j,i){delete S.jobs[id+'_'+i];});
-  S.done[id]=false;save();buzz([20,40,20]);fireConfetti(45);
-  toast('Re-rolled. Totally different card, same letter.');
-  openCard(id);
-}
-function doSkip(id){
-  S.skipped[id]=!S.skipped[id];save();buzz(20);
-  if(S.skipped[id]){
-    var c=cardById(id);
-    fireConfetti(60);
-    toast(c.key?'Skipped — the crew keeps the '+c.key+'. Nobody gets left behind.':'Skipped. On to the next one.');
-    closeSheet();
-  }else{toast('Back in the game.');openCard(id);}
-}
-
-function castTF(id,w,v){S.tf[id+'_'+w]=v;save();buzz(12);openCard(id);}
-function doReveal(id){
-  S.revealed[id]=true;save();buzz([30,60,30]);fireConfetti(70);openCard(id);
-  var rc=cardById(id);if(rc&&rc.impossible)speak((rc.impossible.answer?'It is true. ':'It is false. ')+rc.impossible.reveal,null);
-  setTimeout(function(){var r=document.querySelector('.revealbox');if(r)r.scrollIntoView({behavior:'smooth',block:'center'});},120);
-}
-function toggleVote(id,w){S.votes[id+'_'+w]=!S.votes[id+'_'+w];save();buzz(12);openCard(id);}
-function toggleJob(id,i){
-  S.jobs[id+'_'+i]=!S.jobs[id+'_'+i];save();buzz(14);
-  var b=document.querySelectorAll('.job')[i];
-  if(b){b.classList.toggle('checked',!!S.jobs[id+'_'+i]);b.querySelector('.tick').textContent=S.jobs[id+'_'+i]?'✓':'';}
-}
-function chkCount(id){var c=0;Object.keys(S.chk).forEach(function(k){if(k.indexOf(id+'_')===0&&S.chk[k])c++;});return c;}
-function toggleChk(id,i){S.chk[id+'_'+i]=!S.chk[id+'_'+i];save();buzz(10);openCard(id);}
-function saveAns(id){S.answers[id]=document.getElementById('ans_'+id).value;save();}
-function logSpend(id){
-  var el=document.getElementById('spend_'+id),v=parseFloat(el.value);
-  if(isNaN(v)||v<0){el.focus();return;}
-  var prev=parseFloat(S.answers['spent_'+id]||0)||0;
-  S.spent=Math.max(0,(S.spent||0)-prev+v);S.answers['spent_'+id]=String(v);
-  save();buzz([12,40,12]);coinBurst();renderHQ();openCard(id);
-}
-
-var AZ='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-function abcHTML(id){return AZ.map(function(L){
-  var on=!!(S.abc[id]&&S.abc[id][L]);
-  return '<button class="'+(on?'on':'')+'" onclick="tapLetter(\''+id+'\',\''+L+'\')">'+L+'</button>';}).join('');}
-function abcCount(id){var c=0,o=S.abc[id]||{};for(var k in o)if(o[k])c++;return c;}
-function tapLetter(id,L){
-  if(!S.abc[id])S.abc[id]={};
-  S.abc[id][L]=!S.abc[id][L];save();buzz(10);
-  var g=document.getElementById('abcGrid'),n=document.getElementById('abcCount');
-  if(g)g.innerHTML=abcHTML(id);
-  var c=abcCount(id);
-  if(n)n.textContent=c>=12?'🎉 '+c+' found — you cracked it!':c+' of 12 found';
-}
-
-function grabPhoto(ev,id){
-  var f=ev.target.files&&ev.target.files[0];if(!f)return;
-  var rd=new FileReader();
-  rd.onload=function(e){
-    var img=new Image();
-    img.onload=function(){
-      var max=760,sc=Math.min(1,max/Math.max(img.width,img.height));
-      var cnv=document.createElement('canvas');
-      cnv.width=Math.round(img.width*sc);cnv.height=Math.round(img.height*sc);
-      cnv.getContext('2d').drawImage(img,0,0,cnv.width,cnv.height);
-      S.photos[id]=cnv.toDataURL('image/jpeg',0.72);save();buzz(25);openCard(id);
-    };img.src=e.target.result;
-  };rd.readAsDataURL(f);
-}
-
-/* =========================================================
-   STAMP + CELEBRATE
-   ========================================================= */
-function finish(id){
-  var c=effCard(id);
-  if(S.done[id]){S.done[id]=false;save();openCard(id);return;}
-  var missing=[];
-  effJobs(c,id).forEach(function(j,i){if(!S.jobs[id+'_'+i])missing.push(S.names[j.who]);});
-  if(missing.length){
-    var b=document.getElementById('finishBtn');
-    b.textContent='Still waiting on: '+missing.join(' & ');
-    b.style.background='var(--brass)';b.style.color='var(--ink)';buzz([40,60,40]);
-    setTimeout(function(){b.textContent='STAMP IT — card complete';b.style.background='';b.style.color='';},2200);
+function renderMission(){
+  var host=document.getElementById('mission');
+  if(S.i>=M.length){
+    host.innerHTML='<div class="panel amber"><div class="lbl">◈ Operation complete</div>'+
+      '<h3>'+esc(M.map(function(m){return m.l;}).join(''))+'</h3>'+
+      '<p class="read" style="margin-top:10px;font-size:15.5px;line-height:1.55;color:var(--text)">'+
+      'Eight missions. '+esc(C())+' never did a field task. '+esc(F())+' never read a word. '+
+      'Neither of you could have finished one single card alone. That is what the letters spell.</p>'+
+      '<button class="btn go" style="margin-top:13px" onclick="say(\'Teamwork. '+esc(C())+' ran the operation. '+esc(F())+' ran the field. Neither of you could have done one card alone.\')">🔊 READ IT TO '+esc(F().toUpperCase())+'</button>'+
+      '</div>';
     return;
   }
-  S.done[id]=true;S.skipped[id]=false;save();closeSheet();celebrate(c);
-}
+  var m=M[S.i],i=S.i;
+  var solved=!!S.solved[i]||!m.accept;
+  var sent=!!S.sent[i];
+  var h='';
 
-function celebrate(c){
-  var p=progress(),last=p.keys===KEYS.length&&!!c.key;
-  var el=document.getElementById('patch');
-  el.innerHTML='<div class="letter">'+(c.key||'★')+'</div>'+
-    '<div class="cheer">'+esc(last?'TEAMWORK.':pick(CHEERS))+'</div>'+
-    '<div class="note">'+esc(last?'Eight keystones. Not one of them done alone.':
-      (c.key?'Keystone '+c.key+' is yours. '+(KEYS.length-p.keys)+' to go. Do the handshake.':'Bonus card cleared. Do the handshake.'))+'</div>';
-  document.getElementById('stamp').classList.add('on');
-  document.body.classList.add('shakescreen');
-  buzz([25,50,25,50,90]);fireConfetti(last?260:120);
-  setTimeout(function(){document.body.classList.remove('shakescreen');},460);
-  setTimeout(function(){
-    document.getElementById('stamp').classList.remove('on');renderAll();
-    if(last)setTimeout(openTrophy,320);
-  },last?3400:1900);
-}
+  h+='<div class="panel hot"><div class="lbl">◈ Mission '+(i+1)+' of '+M.length+' · '+esc(m.at)+'</div>'+
+     '<h3>'+esc(m.title)+'</h3>';
 
-function wildcard(){
-  S.extras=(S.extras||0)+1;save();
-  var w=N(pick(WILD));
-  document.getElementById('patch').innerHTML=
-    '<div class="letter" style="font-size:50px">🎲</div><div class="cheer" style="font-size:19px">WILD CARD</div>'+
-    '<div class="note" style="font-size:16px;margin-top:12px">'+esc(w)+'</div>'+
-    '<div class="note" style="opacity:.65;margin-top:12px;font-size:11.5px">Tap anywhere to close</div>';
-  document.getElementById('stamp').classList.add('on');buzz(18);fireConfetti(40);renderHQ();speak(w,null);
-}
-document.getElementById('stamp').addEventListener('click',function(){this.classList.remove('on');});
+  h+='<div class="riddle"><div class="lbl">'+(m.accept?'Decode this — commander only':'Your orders — commander only')+'</div>'+
+     '<p>'+esc(N(m.riddle))+'</p></div>';
 
-/* confetti */
-var cv=document.getElementById('confetti'),cx=cv.getContext('2d'),parts=[],raf=null;
-function sizeCv(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;
-  cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
-addEventListener('resize',sizeCv);sizeCv();
-var COLORS=['#E8552C','#E9A93C','#8ED0D2','#F6F2E9','#3C9C68'];
-function fireConfetti(n){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  cv.classList.add('on');
-  for(var i=0;i<n;i++)parts.push({x:innerWidth/2+(Math.random()-.5)*140,y:innerHeight/2-40,
-    vx:(Math.random()-.5)*13,vy:-Math.random()*15-4,w:5+Math.random()*8,h:8+Math.random()*10,
-    r:Math.random()*6.3,vr:(Math.random()-.5)*.35,c:COLORS[(Math.random()*COLORS.length)|0],life:1});
-  if(!raf)raf=requestAnimationFrame(tick);
-}
-function tick(){
-  cx.clearRect(0,0,innerWidth,innerHeight);
-  for(var i=parts.length-1;i>=0;i--){
-    var p=parts[i];p.vy+=0.42;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vx*=0.995;p.life-=0.006;
-    if(p.y>innerHeight+60||p.life<=0){parts.splice(i,1);continue;}
-    cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.globalAlpha=Math.max(0,Math.min(1,p.life*1.6));
-    cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();
+  if(m.accept){
+    if(!solved){
+      h+='<div class="guess"><input id="ans" placeholder="Type the answer" autocomplete="off" '+
+         'onkeydown="if(event.key===\'Enter\')checkAns()"><button onclick="checkAns()">CHECK</button></div>'+
+         '<div class="verdict" id="verdict"></div>'+
+         '<button class="btn" onclick="showHint()">Need a hint?</button>';
+    }else{
+      h+='<div class="verdict yes" style="margin-top:11px">✓ '+esc(m.solved)+'</div>';
+    }
   }
-  if(parts.length)raf=requestAnimationFrame(tick);
-  else{raf=null;cv.classList.remove('on');cx.clearRect(0,0,innerWidth,innerHeight);}
+
+  if(solved){
+    h+='<button class="transmit'+(sent?'':' armed')+'" id="txBtn" onclick="transmit('+i+')">'+
+       (sent?'\uD83D\uDCE1&nbsp; TRANSMIT AGAIN':'\uD83D\uDCE1&nbsp; TRANSMIT TO '+esc(F().toUpperCase()))+
+       '<span class="sub">'+(sent?'HE HAS HEARD IT':'HE CANNOT PROCEED UNTIL YOU DO')+'</span></button>';
+    if(sent){
+      h+='<div class="readout"><div class="lbl">▸ Transmitted</div>'+
+         '<div class="msg">'+esc(N(m.tx))+'<span class="cursor"></span></div></div>';
+      if(S.phone){
+        h+='<button class="btn" onclick="buzzWatch('+i+')">⌚ ALSO BUZZ HIS WATCH (opens Messages)</button>';
+      }
+    }
+  }
+
+  if(sent){
+    h+='<div class="sect"><div class="lbl">Confirm all three</div><hr></div>';
+    h+=taskRow(i,'cmd',C(),'COMMANDER',m.cmdTask);
+    h+=taskRow(i,'field',F(),'FIELD AGENT',m.fieldTask);
+    h+=taskRow(i,'drv',D(),'DRIVER',m.drvTask);
+
+    if(m.money){
+      h+='<div class="guess" style="margin-top:11px">'+
+         '<input id="sp" inputmode="decimal" placeholder="Spent here (suggest $'+m.money+')">'+
+         '<button onclick="logSpend()">LOG</button></div>'+
+         '<div class="verdict" style="color:var(--text-dim)">Purse: $'+purse()+' of $100</div>';
+    }
+
+    var all=S.tasks[i+'_cmd']&&S.tasks[i+'_field']&&S.tasks[i+'_drv'];
+    h+='<button class="btn go" id="doneBtn" '+(all?'':'disabled')+' onclick="complete('+i+')">'+
+       (all?'✓ MISSION COMPLETE':'WAITING ON ALL THREE')+'</button>';
+  }
+
+  h+='</div>';
+
+  if(i>0){h+='<button class="btn" onclick="back()">‹ Previous mission</button>';}
+  host.innerHTML=h;
 }
-function coinBurst(){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  cv.classList.add('on');
-  for(var i=0;i<26;i++)parts.push({x:innerWidth-56,y:70,vx:(Math.random()-.5)*9,vy:-Math.random()*10-3,w:9,h:9,r:0,vr:.3,c:'#E9A93C',life:1});
-  if(!raf)raf=requestAnimationFrame(tick);
+
+function taskRow(i,who,name,role,text){
+  var k=i+'_'+who,on=!!S.tasks[k];
+  return '<button class="task '+who+(on?' done':'')+'" onclick="toggleTask('+i+',\''+who+'\')">'+
+    '<span class="box">'+(on?'✓':'')+'</span><span class="tb">'+
+    '<span class="who2">'+esc(role)+' · '+esc(name)+'</span>'+
+    '<span class="tt">'+esc(N(text))+'</span></span></button>';
 }
+
+function renderStops(){
+  var host=document.getElementById('stops');host.innerHTML='';
+  STOPS.forEach(function(st){
+    var reached=M.some(function(m,i){return m.stop===st.n && S.tasks['done_'+i];});
+    var known=M.some(function(m,i){return m.stop===st.n && (S.solved[i]||!m.accept) && i<=S.i;});
+    var d=document.createElement('div');
+    d.className='stopcard'+(known||reached?'':' locked');
+    d.innerHTML='<div class="n">STOP '+st.n+(known||reached?'':' · LOCKED')+'</div>'+
+      '<h4>'+(known||reached?esc(st.name):'— decode mission to unlock —')+'</h4>'+
+      (known||reached?'<div class="a">'+esc(st.addr)+'</div>'+
+        '<button class="mapbtn" onclick="openMap(\''+esc(st.name)+'\',\''+esc(st.addr)+'\')">📍 OPEN IN MAPS</button>':'');
+    host.appendChild(d);
+  });
+}
+
+function renderAll(){renderHead();renderMission();renderStops();}
 
 /* =========================================================
-   ALBUM + TROPHY
+   ACTIONS
    ========================================================= */
-function openAlbum(){
-  var h='<div class="card"><div class="label" style="color:var(--orange-deep)">The record</div>'+
-    '<p style="margin:6px 0 0;font-size:14px;font-weight:600;color:var(--ink-soft)">Everything the crew found, said, and photographed today.</p></div>';
-  var imgs='',any=false;
-  allCards().forEach(function(b){var c=effCard(b.id);if(S.photos[c.id]){any=true;
-    imgs+='<figure><img src="'+S.photos[c.id]+'" alt="'+esc(N(c.title))+'"><figcaption>'+esc(N(c.title))+'</figcaption></figure>';}});
-  h+=any?'<div class="album">'+imgs+'</div>':'<div class="card flat" style="background:var(--chalk-2)"><p style="margin:0;font-weight:700;font-size:14px">No photos yet. Most cards have a camera button in them.</p></div>';
-  var notes='';
-  allCards().forEach(function(b){var c=effCard(b.id);if(S.answers[c.id])
-    notes+='<div style="margin-top:12px"><div class="label" style="color:var(--orange-deep)">'+esc(N(c.title))+'</div>'+
-    '<p style="margin:4px 0 0;font-size:15px;font-weight:600;font-family:Lexend,sans-serif">'+esc(S.answers[c.id])+'</p></div>';});
-  if(notes)h+='<div class="card">'+notes+'</div>';
-  h+='<div class="card" style="background:var(--brass);color:var(--ink)"><div class="label" style="opacity:.7">The purse</div>'+
-    '<p style="margin:6px 0 0;font-size:15px;font-weight:800">Spent $'+(S.spent||0)+' of $100. $'+purseLeft()+' left.</p></div>';
-  openSheet('Quest Album',h);
+function saveCrew(){
+  S.cmd=document.getElementById('inCmd').value.trim();
+  S.field=document.getElementById('inField').value.trim();
+  S.drv=document.getElementById('inDrv').value.trim();
+  S.phone=document.getElementById('inPhone').value.trim();
+  if(!S.cmd||!S.field){alert('Commander and field agent both need names.');return;}
+  save();buzz(20);renderAll();
 }
 
-function openTrophy(){
-  var p=progress(),won=p.keys===KEYS.length;
-  var h='<div class="trophy-wrap">'+(won?'<div class="rays"></div>':'')+
-    '<div class="cup">'+(won?'🏆':'🥇')+'</div>'+
-    '<div class="sign" style="font-size:29px;margin-top:14px;color:var(--brass)">'+(won?'THE CREW CUP':'NOT YET')+'</div>'+
-    '<div style="font-size:15px;font-weight:700;color:var(--sky);margin-top:9px">'+
-    (won?esc(S.crew||'Your crew')+' cleared all eight keystones.':p.keys+' of 8 keystones. '+p.done+' of '+p.total+' cards. Keep going.')+'</div></div>';
-  h+='<div class="card" style="background:'+(won?'var(--good)':'var(--chalk)')+';color:'+(won?'var(--chalk)':'var(--ink)')+'">'+
-    '<div class="label" style="'+(won?'color:var(--chalk);opacity:.8':'color:var(--orange-deep)')+'">The eight keystones</div>'+
-    '<div class="sign" style="font-size:32px;margin-top:9px;letter-spacing:.06em">'+
-    KEYS.map(function(c){return isCleared(c.id)?c.key:'·';}).join(' ')+'</div>'+
-    (won?'<p style="margin:11px 0 0;font-size:15px;font-weight:700;line-height:1.45">That was the whole point. Read it out loud to each other.</p>'
-       :'<p style="margin:11px 0 0;font-size:14px;font-weight:600;color:var(--ink-soft)">The eight keystones spell one word. Nobody gets to know it early.</p>')+'</div>';
-  if(won)h+='<div class="card" style="background:var(--orange);color:var(--chalk)"><div class="label">Last thing, before you go home</div>'+
-    '<p class="readaloud" style="margin:9px 0 0;font-size:16.5px;line-height:1.55">Go round the circle one more time. Each person names the best moment of the whole day — and it has to be a moment somebody ELSE made happen.</p></div>';
-  openSheet('The Crew Cup',h);
+function checkAns(){
+  var m=M[S.i],el=document.getElementById('ans'),v=document.getElementById('verdict');
+  var g=(el.value||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim();
+  if(!g){el.focus();return;}
+  var ok=m.accept.some(function(a){return g.indexOf(a.replace(/[^a-z0-9 ]/g,''))>-1||a.replace(/[^a-z0-9 ]/g,'').indexOf(g)>-1&&g.length>3;});
+  if(ok){
+    S.solved[S.i]=true;save();buzz([25,50,25]);
+    v.className='verdict yes';v.textContent='✓ CORRECT — target confirmed';
+    setTimeout(renderAll,600);
+  }else{
+    v.className='verdict no';v.textContent='✗ Not it. Read the riddle again — every detail is a real fact.';
+    buzz(90);
+  }
+}
+function showHint(){
+  var m=M[S.i],v=document.getElementById('verdict');
+  v.className='verdict';v.style.color='var(--amber)';
+  v.textContent='HINT: '+m.hint;
 }
 
-function wipe(b){
-  if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='⚠️ Tap again to erase everything';
-    setTimeout(function(){b.dataset.armed='0';b.textContent='↺  Start a brand new quest';},3500);return;}
+/* The heart of the game: the commander sends, the agent hears. */
+function transmit(i){
+  var m=M[i],btn=document.getElementById('txBtn');
+  S.sent[i]=true;save();buzz([30,60,30,60,120]);
+  if(btn){btn.classList.add('sending');btn.classList.remove('armed');
+    btn.innerHTML='📡 TRANSMITTING…<span class="sub">HOLD THE PHONE UP TO '+esc(F().toUpperCase())+'</span>';}
+  say('Transmission for '+F()+'. '+N(m.tx), function(){ renderAll(); });
+  setTimeout(function(){renderAll();},900);
+}
+
+function buzzWatch(i){
+  var m=M[i];
+  var body=encodeURIComponent('MISSION: '+N(m.tx));
+  window.location.href='sms:'+encodeURIComponent(S.phone)+'&body='+body;
+}
+
+function toggleTask(i,who){
+  var k=i+'_'+who;S.tasks[k]=!S.tasks[k];save();buzz(14);renderAll();
+}
+
+function logSpend(){
+  var el=document.getElementById('sp'),v=parseFloat(el.value);
+  if(isNaN(v)||v<0){el.focus();return;}
+  S.spent=(S.spent||0)+v;save();buzz(20);renderAll();
+}
+
+function complete(i){
+  S.tasks['done_'+i]=true;save();
+  var m=M[i];
+  var med=document.getElementById('medal');
+  med.innerHTML='<div class="ltr">'+m.l+'</div><div class="t">CREW POINT</div>'+
+    '<div class="s">Neither of you<br>did that alone</div>';
+  document.getElementById('flash').classList.add('on');
+  buzz([40,70,40,70,160]);
+  say('Crew point. Neither of you did that alone.');
+  setTimeout(function(){
+    document.getElementById('flash').classList.remove('on');
+    S.i=i+1;save();renderAll();window.scrollTo({top:0,behavior:'smooth'});
+  },2200);
+}
+document.getElementById('flash').addEventListener('click',function(){this.classList.remove('on');});
+
+function back(){if(S.i>0){S.i--;save();renderAll();}}
+function openMap(n,a){window.open('https://maps.apple.com/?q='+encodeURIComponent(n+', '+a),'_blank');}
+function resetAll(b){
+  if(b.dataset.a!=='1'){b.dataset.a='1';b.textContent='⚠ Tap again to erase everything';
+    setTimeout(function(){b.dataset.a='0';b.textContent='↺ Start a brand new operation';},3000);return;}
   try{localStorage.removeItem(KEY);}catch(e){}
   location.reload();
 }
 
 renderAll();
-(function(){var mb=document.getElementById('muteBtn');if(mb&&!S.voice){mb.classList.add('off');mb.textContent='🔇';}})();
 </script>
