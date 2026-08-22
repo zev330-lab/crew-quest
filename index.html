@@ -103,6 +103,14 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 .riddle .lbl{color:var(--amber)}
 .riddle p{margin:9px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:16.5px;line-height:1.55;color:var(--text)}
 
+/* (choices removed)
+.mapbtn2{color:var(--cyan)}
+/* old choice styles — a nine-year-old can solve this, not guess a proper noun */
+.choices{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.choice{background:var(--panel-3);border:1px solid var(--line);border-radius:9px;padding:14px 12px;
+  font-weight:800;font-size:15.5px;text-align:left;color:var(--text);transition:.14s}
+.choice:active{transform:scale(.985);border-color:var(--amber)}
+
 /* answer input */
 .guess{display:flex;gap:7px;margin-top:11px}
 .guess input{flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:7px;
@@ -130,6 +138,12 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 .readout .msg{margin:9px 0 0;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;line-height:1.6;color:var(--cyan)}
 .readout .cursor{display:inline-block;width:8px;height:15px;background:var(--cyan);vertical-align:-2px;animation:blink .95s step-end infinite}
 @keyframes blink{50%{opacity:0}}
+
+/* handoff to the field agent — the phone can go no further alone */
+.handoff{background:#0A1A1E;border:1px solid var(--cyan);border-radius:9px;padding:14px;margin-top:13px}
+.handoff .lbl{color:var(--cyan)}
+.handoff .ask{margin:9px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:15.5px;line-height:1.5;color:var(--text)}
+.handoff input{text-align:center;letter-spacing:.4em;font-size:20px}
 
 /* report back from the field — the handoff */
 .report{background:#0D1B18;border:1px solid var(--good);border-radius:9px;padding:14px;margin-top:12px}
@@ -284,7 +298,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='command-deck-v1';
-var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,reports:{},frags:{}};
+var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,reports:{},frags:{},codes:{}};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -323,109 +337,57 @@ function say(text,onEnd){
    hears it. Letters spell the answer to the whole thing.
    ========================================================= */
 var M=[
-{
- l:'T', stop:1, at:'On the way to stop one',
- title:'Identify the target',
- riddle:'It is older than every single house on your street. Older than your grandparents\' grandparents. A very rich man once bought the whole building and dragged it here behind a team of OXEN, because trucks were not good enough. It sells candy in barrels. What is the name of the store?',
- accept:['wayside','wayside country','wayside country store','country store'],
- hint:'Two words. The first one is what you call the side of a road.',
- solved:'WAYSIDE COUNTRY STORE. Built 1790. Henry Ford bought it and moved it here in 1928 — by oxen. Tell the driver to go. Do not tell them why.',
- tx:'Field agent. Your target is a very old store full of candy. When you get inside, find the oldest thing you can see. Do not touch it. Point at it and say, found it.',
- cmdTask:'Work out the store from the riddle, then direct {D} there. Do not say the answer out loud in the car — only the directions.',
- fieldTask:'Find the oldest thing in the store. Point, do not touch. Say FOUND IT out loud.',
- drvTask:'Drive where {C} tells you. Do not ask what the mission is.',
- report:{ask:'What did {F} say the oldest thing was?', accept:null, hint:null, frag:'INTEL FRAGMENT 1 of 8: the word you are building starts with T.'}
-},
-{
- l:'E', stop:1, at:'Inside stop one',
- title:'The barrel run',
- riddle:'Your field agent cannot read the labels. You can. Pick three sweets he has never tried, and do not tell him what any of them are.',
- accept:null,
- solved:'',
- tx:'Field agent. Three mystery sweets are coming. You have to eat one bite of each and guess what it is before anybody tells you. No looking at the wrapper.',
- cmdTask:'Choose three sweets {F} has never had. Keep the names secret. Spend up to fifteen dollars.',
- fieldTask:'Taste each one and guess what it is BEFORE anyone tells you.',
- drvTask:'Pay. Say nothing about what any of it is.',
- money:15,
- report:{ask:'What did {F} guess each sweet was?', accept:null, hint:null, frag:'INTEL FRAGMENT 2 of 8: second letter is E.'}
-},
-{
- l:'A', stop:1, at:'Outside stop one',
- title:'Confirm the year',
- riddle:'The building has a year on it, or somebody inside knows it. Find out what year this building was built. Your field agent has to be the one who asks a grown-up — you are not allowed to.',
- accept:['1790','seventeen ninety'],
- hint:'It is in the seventeen hundreds. Ends in a zero.',
- solved:'1790 CONFIRMED. That is thirty-six years older than the town of Marlborough having a railroad, and older than almost every state in the country.',
- tx:'Field agent. Your job is to ask a grown-up who works here one question. Ask them: what year was this building built? Then remember the number and tell your commander.',
- cmdTask:'You may NOT ask. {F} has to. Type the year in when he reports it.',
- fieldTask:'Ask a grown-up: "What year was this building built?" Remember the number.',
- drvTask:'Stand back. Let {F} do the talking, even if it takes a minute.',
- report:{ask:'What YEAR did the grown-up tell {F}?', accept:['1790'], hint:'It is in the seventeen hundreds and ends in a zero.', frag:'INTEL FRAGMENT 3 of 8: third letter is A.'}
-},
-{
- l:'M', stop:2, at:'On the way to stop two',
- title:'Decode the next location',
- riddle:'Eighteen holes. But no grass, no sky, no wind — because the whole course is INSIDE a greenhouse, surrounded by plants and trees and rock paths. They also make more than forty flavours of ice cream on site. It is a farm. What is it called?',
- accept:['trombetta','trombettas','trombetta\'s','trombettas farm','trombetta\'s farm'],
- hint:'An Italian family name. Starts with T.',
- solved:'TROMBETTA\'S FARM, 655 Farm Rd. Indoor mini golf inside a greenhouse. Direct the driver.',
- tx:'Field agent. Next target has eighteen holes of mini golf, indoors, inside a giant greenhouse. Your job when you get there is to find one plant taller than your commander.',
- cmdTask:'Solve it, then navigate {D} there. Still no spoilers.',
- fieldTask:'Find a plant taller than {C}. Stand next to it to prove it.',
- drvTask:'Drive. Still no questions.',
- report:{ask:'What plant did {F} find that was taller than you?', accept:null, hint:null, frag:'INTEL FRAGMENT 4 of 8: fourth letter is M.'}
-},
-{
- l:'W', stop:2, at:'At stop two',
- title:'The blind flavour',
- riddle:'Forty flavours. Your field agent picks one WITHOUT being told what any of them are — you read the board and describe one flavour to him using only colours and feelings. No naming it.',
- accept:null,
- solved:'',
- tx:'Field agent. Your commander is going to describe an ice cream to you without telling you what it is. You have to decide from the description alone. Trust her.',
- cmdTask:'Describe one flavour to {F} using only colours and feelings. Never say its name. Spend up to twenty-five dollars.',
- fieldTask:'Choose from the description alone. No peeking at the board.',
- drvTask:'Pay, and order the same thing {F} picked. Solidarity.',
- money:25,
- report:{ask:'What flavour did {F} choose from your description — and was he happy?', accept:null, hint:null, frag:'INTEL FRAGMENT 5 of 8: fifth letter is W.'}
-},
-{
- l:'O', stop:2, at:'At stop two',
- title:'Eighteen holes, one score',
- riddle:'Play the course. There is only ONE score card and it belongs to the crew, not to any person. Every stroke anybody takes counts against the same number.',
- accept:null,
- solved:'',
- tx:'Field agent. Mini golf. Important — there is only one score for the whole crew. If you do badly, everybody did badly. If you do well, everybody did well. There is no beating anybody today.',
- cmdTask:'Keep the single crew score. Say it out loud after every hole.',
- fieldTask:'Play. Cheer for the other two as loudly as for yourself.',
- drvTask:'Take the hardest shot on every hole. You are the grown-up.',
- report:{ask:'What was the crew\'s single score?', accept:null, hint:null, frag:'INTEL FRAGMENT 6 of 8: sixth letter is O.'}
-},
-{
- l:'R', stop:3, at:'On the way to stop three',
- title:'Final coordinates',
- riddle:'Go-karts on an indoor track. Laser tag over two floors. Thirty lanes of bowling. Sixty-plus arcade machines. And a trampoline park sharing the exact same front door. One hundred and fifty thousand square feet. What is the name of the place?',
- accept:['apex','apex entertainment'],
- hint:'It means the very top of something. Four letters.',
- solved:'APEX ENTERTAINMENT, 21 Apex Dr. Altitude Trampoline Park is the same address. Take the driver there.',
- tx:'Field agent. Final target. Go-karts, laser tag, bowling, trampolines, and sixty arcade machines. You get ten dollars on a card. But there is one last rule coming.',
- cmdTask:'Decode it and navigate. Last drive of the day.',
- fieldTask:'Nothing yet. Save your energy.',
- drvTask:'Drive where told. You are nearly off duty.',
- report:{ask:'Ask {F} which of the five things he most wants to do. Type his answer.', accept:null, hint:null, frag:'INTEL FRAGMENT 7 of 8: seventh letter is R.'}
-},
-{
- l:'K', stop:3, at:'At stop three',
- title:'The last rule',
- riddle:'Ten dollars each. Spend it however you like. But before anybody goes home, all three of you must play ONE game together. Same machine, same moment, all three.',
- accept:null,
- solved:'',
- tx:'Field agent. Final order. Ten dollars is yours, spend it how you want. But nobody leaves until all three of you play one game together at the same time. You get to choose which game. Your commander and your driver have to say yes.',
- cmdTask:'Ten dollars each on the card. {F} chooses the together-game. You have to agree to it.',
- fieldTask:'YOU choose the one game all three play together. Choose well.',
- drvTask:'Play it. Properly. No phone in your hand.',
- money:60,
- report:{ask:'Which game did {F} choose for all three of you?', accept:null, hint:null, frag:'FINAL FRAGMENT: eighth letter is K. Now read all eight out loud.'}
-}];
+{ l:'T', stop:1, ch:260083,
+  place:'Wayside Country Store',
+  addr:'1015 Boston Post Rd E, Marlborough',
+  brief:'Drive here first. It is a candy store over 200 years old \u2014 a rich man once dragged the whole building here behind OXEN. Read that bit out loud in the car, they will not believe you.',
+  crew:'Buy three sweets nobody has ever tried. Up to $15.',
+  money:15 },
+
+{ l:'E', stop:1, ch:263954,
+  place:'Still at the Country Store',
+  addr:'1015 Boston Post Rd E, Marlborough',
+  brief:'Stay inside. This one is about the building itself, not the candy.',
+  crew:'Find the oldest thing in the shop. Everyone has to agree on it.' },
+
+{ l:'A', stop:1, ch:257323,
+  place:'Before you leave the store',
+  addr:'1015 Boston Post Rd E, Marlborough',
+  brief:'One question needs asking, and you are not allowed to ask it. Only your field agent can.',
+  crew:'He asks a grown-up what year this building was built. Remember the number.' },
+
+{ l:'M', stop:2, ch:264974,
+  place:"Trombetta's Farm",
+  addr:'655 Farm Rd, Marlborough',
+  brief:'Next stop. Eighteen holes of mini golf INDOORS, inside a giant greenhouse full of plants and rock paths. Tell the driver where to go.',
+  crew:'Play the course. ONE score for the whole crew \u2014 not one each.' },
+
+{ l:'W', stop:2, ch:259303,
+  place:"Still at Trombetta's",
+  addr:'655 Farm Rd, Marlborough',
+  brief:'They make more than forty flavours of ice cream on site, that day.',
+  crew:'Everybody orders a flavour nobody in the crew has ever had. Up to $25.',
+  money:25 },
+
+{ l:'O', stop:2, ch:262220,
+  place:'Before you leave the farm',
+  addr:'655 Farm Rd, Marlborough',
+  brief:'One last thing here, and it is the nicest one of the day.',
+  crew:'Each person says one thing they are glad somebody ELSE in the crew did today.' },
+
+{ l:'R', stop:3, ch:258163,
+  place:'Apex Entertainment',
+  addr:'21 Apex Dr, Marlborough',
+  brief:'Final destination. Go-karts, laser tag, bowling, an arcade, and a trampoline park all behind one door. Navigate the driver there.',
+  crew:'Your field agent picks what the crew does first. Everybody has to say yes.' },
+
+{ l:'K', stop:3, ch:261014,
+  place:'The last rule at Apex',
+  addr:'21 Apex Dr, Marlborough',
+  brief:'Ten dollars each on the arcade card. Spend it however you like.',
+  crew:'Nobody goes home until all three of you play ONE game together. Same machine, same moment.',
+  money:60 }
+];
 
 var STOPS=[
 {n:1,name:'Wayside Country Store',addr:'1015 Boston Post Rd E, Marlborough'},
@@ -458,103 +420,54 @@ function renderHead(){
 function renderMission(){
   var host=document.getElementById('mission');
   if(S.i>=M.length){
-    host.innerHTML='<div class="panel amber"><div class="lbl">◈ Operation complete</div>'+
-      '<h3>'+esc(M.map(function(m){return m.l;}).join(''))+'</h3>'+
-      '<p class="read" style="margin-top:10px;font-size:15.5px;line-height:1.55;color:var(--text)">'+
-      'Eight missions. '+esc(C())+' never did a field task. '+esc(F())+' never read a word. '+
-      'Neither of you could have finished one single card alone. That is what the letters spell.</p>'+'<div class="frag" style="margin-top:12px">'+esc(F())+' reported back on every single mission. Without his eight reports, '+esc(C())+' never would have unlocked one letter.</div>'+
-      '<button class="btn go" style="margin-top:13px" onclick="say(\'Teamwork. '+esc(C())+' ran the operation. '+esc(F())+' ran the field. Neither of you could have done one card alone.\')">🔊 READ IT TO '+esc(F().toUpperCase())+'</button>'+
-      '</div>';
+    host.innerHTML='<div class="panel amber"><div class="lbl">\u25c8 Operation complete</div>'+
+      '<h3>'+esc(M.map(function(m){return m.l;}).join(' '))+'</h3>'+
+      '<p class="ask" style="margin-top:10px">Eight codes. '+esc(C())+' could not get a single one without '+esc(F())+
+      ', and '+esc(F())+' never knew where he was going without '+esc(C())+'.</p>'+
+      '<button class="btn go" style="margin-top:12px" onclick="say(\'Teamwork. Eight codes. Neither of you could do one without the other.\')">\ud83d\udd0a READ IT OUT LOUD</button></div>';
     return;
   }
-  var m=M[S.i],i=S.i;
-  var solved=!!S.solved[i]||!m.accept;
-  var sent=!!S.sent[i];
+  var m=M[S.i], i=S.i, unlocked=!!S.codes[i];
   var h='';
 
-  h+='<div class="panel hot"><div class="lbl">◈ Mission '+(i+1)+' of '+M.length+' · '+esc(m.at)+'</div>'+
-     '<h3>'+esc(m.title)+'</h3>';
+  h+='<div class="panel hot"><div class="lbl">\u25c8 Stage '+(i+1)+' of '+M.length+'</div>'+
+     '<h3>'+esc(m.place)+'</h3>'+
+     '<div class="a" style="font-size:13px;color:var(--text-dim);font-weight:700;margin-top:4px">'+esc(m.addr)+'</div>';
 
-  h+='<div class="riddle"><div class="lbl">'+(m.accept?'Decode this — commander only':'Your orders — commander only')+'</div>'+
-     '<p>'+esc(N(m.riddle))+'</p></div>';
+  h+='<div class="riddle"><div class="lbl">Read this to the crew</div><p>'+esc(m.brief)+'</p></div>';
 
-  if(m.accept){
-    if(!solved){
-      h+='<div class="guess"><input id="ans" placeholder="Type the answer" autocomplete="off" '+
-         'onkeydown="if(event.key===\'Enter\')checkAns()"><button onclick="checkAns()">CHECK</button></div>'+
-         '<div class="verdict" id="verdict"></div>'+
-         '<button class="btn" onclick="showHint()">Need a hint?</button>';
-    }else{
-      h+='<div class="verdict yes" style="margin-top:11px">✓ '+esc(m.solved)+'</div>';
-    }
+  h+='<div class="report"><div class="lbl">\u25b8 What the crew does here</div>'+
+     '<p class="ask">'+esc(m.crew)+'</p></div>';
+
+  if(m.money){
+    h+='<div class="guess" style="margin-top:11px">'+
+       '<input id="sp" inputmode="decimal" placeholder="Spent here (about $'+m.money+')">'+
+       '<button onclick="logSpend()">LOG</button></div>'+
+       '<div class="verdict" style="color:var(--text-dim)">Purse: $'+purse()+' of $100</div>';
   }
 
-  if(solved){
-    h+='<button class="transmit'+(sent?'':' armed')+'" id="txBtn" onclick="transmit('+i+')">'+
-       (sent?'\uD83D\uDCE1&nbsp; TRANSMIT AGAIN':'\uD83D\uDCE1&nbsp; TRANSMIT TO '+esc(F().toUpperCase()))+
-       '<span class="sub">'+(sent?'HE HAS HEARD IT':'HE CANNOT PROCEED UNTIL YOU DO')+'</span></button>';
-    if(sent){
-      h+='<div class="readout"><div class="lbl">▸ Transmitted</div>'+
-         '<div class="msg">'+esc(N(m.tx))+'<span class="cursor"></span></div></div>';
-      if(S.phone){
-        h+='<button class="btn" onclick="buzzWatch('+i+')">⌚ ALSO BUZZ HIS WATCH (opens Messages)</button>';
-      }
-    }
+  h+='<button class="btn mapbtn2" onclick="openMap(\''+esc(m.place)+'\',\''+esc(m.addr)+'\')">\ud83d\udccd OPEN IN MAPS</button>';
+
+  h+='<div class="handoff"><div class="lbl">\u25b8 You need a code to continue</div>'+
+     '<p class="ask">Say out loud: <strong>"'+esc(F())+', mission '+(i+1)+'."</strong><br>'+
+     'He taps that number on his watch, does the job, and his watch gives him a 3-digit code.</p>'+
+     '<p class="ask" style="color:var(--text-dim);font-size:13.5px;margin-top:8px">'+
+     'Only his watch has it. There is no other way past this screen.</p>';
+
+  if(!unlocked){
+    h+='<div class="guess"><input id="code" inputmode="numeric" maxlength="3" placeholder="3-digit code" '+
+       'autocomplete="off" onkeydown="if(event.key===\'Enter\')checkCode()"><button onclick="checkCode()">UNLOCK</button></div>'+
+       '<div class="verdict" id="codev"></div>';
+  }else{
+    h+='<div class="verdict yes" style="margin-top:10px">\u2713 CODE ACCEPTED \u2014 '+esc(F())+' did his job</div>'+
+       '<button class="btn go" style="margin-top:11px" onclick="advance('+i+')">NEXT STAGE \u203a</button>';
   }
+  h+='</div></div>';
 
-  if(sent){
-    h+='<div class="sect"><div class="lbl">Confirm all three</div><hr></div>';
-    h+=taskRow(i,'cmd',C(),'COMMANDER',m.cmdTask);
-    h+=taskRow(i,'field',F(),'FIELD AGENT',m.fieldTask);
-    h+=taskRow(i,'drv',D(),'DRIVER',m.drvTask);
-
-    if(m.money){
-      h+='<div class="guess" style="margin-top:11px">'+
-         '<input id="sp" inputmode="decimal" placeholder="Spent here (suggest $'+m.money+')">'+
-         '<button onclick="logSpend()">LOG</button></div>'+
-         '<div class="verdict" style="color:var(--text-dim)">Purse: $'+purse()+' of $100</div>';
-    }
-
-    var all=S.tasks[i+'_cmd']&&S.tasks[i+'_field']&&S.tasks[i+'_drv'];
-
-    if(m.report){
-      var got=!!S.reports[i];
-      h+='<div class="report"><div class="lbl">▸ Report back from '+esc(F())+'</div>'+
-         '<p class="ask">'+esc(N(m.report.ask))+'</p>';
-      if(!got){
-        if(!all){
-          h+='<div class="locked-note">LOCKED — all three confirmations first</div>';
-        }else{
-          h+='<div class="guess"><input id="rep" placeholder="Type what '+esc(F())+' told you" autocomplete="off" '+
-             'onkeydown="if(event.key===\'Enter\')fileReport()"><button onclick="fileReport()">FILE</button></div>'+
-             '<div class="verdict" id="repv"></div>'+
-             (m.report.hint?'<button class="btn" onclick="repHint()">Need a hint?</button>':'');
-        }
-      }else{
-        h+='<div class="verdict yes" style="margin-top:10px">✓ FILED: '+esc(S.reports[i])+'</div>';
-      }
-      h+='</div>';
-      if(S.frags[i]) h+='<div class="frag">🔓 '+esc(m.report.frag)+'</div>';
-    }
-
-    var ready = all && (!m.report || !!S.reports[i]);
-    h+='<button class="btn go" id="doneBtn" '+(ready?'':'disabled')+' onclick="complete('+i+')">'+
-       (ready?'✓ MISSION COMPLETE':(all?'WAITING ON '+esc(F().toUpperCase())+"'S REPORT":'WAITING ON ALL THREE'))+'</button>';
-  }
-
-  h+='</div>';
-
-  if(i>0){h+='<button class="btn" onclick="back()">‹ Previous mission</button>';}
+  if(i>0) h+='<button class="btn" onclick="back()">\u2039 Previous stage</button>';
   host.innerHTML=h;
 }
 
-function taskRow(i,who,name,role,text){
-  var k=i+'_'+who,on=!!S.tasks[k];
-  return '<button class="task '+who+(on?' done':'')+'" onclick="toggleTask('+i+',\''+who+'\')">'+
-    '<span class="box">'+(on?'✓':'')+'</span><span class="tb">'+
-    '<span class="who2">'+esc(role)+' · '+esc(name)+'</span>'+
-    '<span class="tt">'+esc(N(text))+'</span></span></button>';
-}
 
 function renderStops(){
   var host=document.getElementById('stops');host.innerHTML='';
@@ -585,64 +498,30 @@ function saveCrew(){
   save();buzz(20);renderAll();
 }
 
-function checkAns(){
-  var m=M[S.i],el=document.getElementById('ans'),v=document.getElementById('verdict');
-  var g=(el.value||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim();
+
+
+/* The phone deliberately has no way to produce the field agent's mission.
+   It cannot speak it, display it, or skip it — only his watch holds it. */
+function hashCode(str){
+  var v=7;
+  for(var i=0;i<str.length;i++){ v=(v*31+str.charCodeAt(i)) & 0xFFFFFF; }
+  return v;
+}
+function checkCode(){
+  var i=S.i,m=M[i],el=document.getElementById('code'),v=document.getElementById('codev');
+  var g=(el.value||'').replace(/\D/g,'');
   if(!g){el.focus();return;}
-  var ok=m.accept.some(function(a){return g.indexOf(a.replace(/[^a-z0-9 ]/g,''))>-1||a.replace(/[^a-z0-9 ]/g,'').indexOf(g)>-1&&g.length>3;});
-  if(ok){
-    S.solved[S.i]=true;save();buzz([25,50,25]);
-    v.className='verdict yes';v.textContent='✓ CORRECT — target confirmed';
-    setTimeout(renderAll,600);
-  }else{
-    v.className='verdict no';v.textContent='✗ Not it. Read the riddle again — every detail is a real fact.';
-    buzz(90);
+  if(hashCode(g)!==m.ch){
+    v.className='verdict no';
+    v.textContent='\u2717 WRONG CODE. Only '+F()+"'s watch has it. He has to finish the mission first.";
+    buzz(90); el.value=''; el.focus(); return;
   }
-}
-function showHint(){
-  var m=M[S.i],v=document.getElementById('verdict');
-  v.className='verdict';v.style.color='var(--amber)';
-  v.textContent='HINT: '+m.hint;
+  S.codes[i]=g; save(); buzz([25,60,25,60,120]);
+  v.className='verdict yes'; v.textContent='\u2713 ACCEPTED';
+  setTimeout(renderAll,500);
 }
 
-/* The heart of the game: the commander sends, the agent hears. */
-function transmit(i){
-  var m=M[i],btn=document.getElementById('txBtn');
-  S.sent[i]=true;save();buzz([30,60,30,60,120]);
-  if(btn){btn.classList.add('sending');btn.classList.remove('armed');
-    btn.innerHTML='📡 TRANSMITTING…<span class="sub">HOLD THE PHONE UP TO '+esc(F().toUpperCase())+'</span>';}
-  say('Transmission for '+F()+'. '+N(m.tx), function(){ renderAll(); });
-  setTimeout(function(){renderAll();},900);
-}
 
-function buzzWatch(i){
-  var m=M[i];
-  var body=encodeURIComponent('MISSION: '+N(m.tx));
-  window.location.href='sms:'+encodeURIComponent(S.phone)+'&body='+body;
-}
-
-function fileReport(){
-  var i=S.i,m=M[i],el=document.getElementById('rep'),v=document.getElementById('repv');
-  var val=(el.value||'').trim();
-  if(!val){el.focus();return;}
-  if(m.report.accept){
-    var g=val.toLowerCase().replace(/[^a-z0-9]/g,'');
-    var ok=m.report.accept.some(function(a){return g.indexOf(a.replace(/[^a-z0-9]/g,''))>-1;});
-    if(!ok){v.className='verdict no';v.textContent='\u2717 That is not what the record says. Send '+F()+' back to ask again.';buzz(90);return;}
-  }
-  S.reports[i]=val; S.frags[i]=true; save(); buzz([25,60,25]);
-  say('Report filed. '+m.report.frag);
-  renderAll();
-}
-function repHint(){
-  var v=document.getElementById('repv');
-  v.className='verdict';v.style.color='var(--amber)';
-  v.textContent='HINT: '+M[S.i].report.hint;
-}
-
-function toggleTask(i,who){
-  var k=i+'_'+who;S.tasks[k]=!S.tasks[k];save();buzz(14);renderAll();
-}
 
 function logSpend(){
   var el=document.getElementById('sp'),v=parseFloat(el.value);
@@ -650,22 +529,19 @@ function logSpend(){
   S.spent=(S.spent||0)+v;save();buzz(20);renderAll();
 }
 
-function complete(i){
-  S.tasks['done_'+i]=true;save();
-  var m=M[i];
-  var med=document.getElementById('medal');
-  med.innerHTML='<div class="ltr">'+m.l+'</div><div class="t">CREW POINT</div>'+
-    '<div class="s">Neither of you<br>did that alone</div>';
-  document.getElementById('flash').classList.add('on');
-  buzz([40,70,40,70,160]);
-  say('Crew point. Neither of you did that alone.');
-  setTimeout(function(){
-    document.getElementById('flash').classList.remove('on');
-    S.i=i+1;save();renderAll();window.scrollTo({top:0,behavior:'smooth'});
-  },2200);
-}
 document.getElementById('flash').addEventListener('click',function(){this.classList.remove('on');});
 
+function advance(i){
+  var med=document.getElementById('medal');
+  med.innerHTML='<div class="ltr">'+M[i].l+'</div><div class="t">CREW POINT</div>'+
+    '<div class="s">'+esc(F())+' unlocked that,<br>not you</div>';
+  document.getElementById('flash').classList.add('on');
+  buzz([40,70,40]); say('Crew point. '+F()+' unlocked that one.');
+  setTimeout(function(){
+    document.getElementById('flash').classList.remove('on');
+    S.i=i+1; save(); renderAll(); window.scrollTo({top:0,behavior:'smooth'});
+  },1900);
+}
 function back(){if(S.i>0){S.i--;save();renderAll();}}
 function openMap(n,a){window.open('https://maps.apple.com/?q='+encodeURIComponent(n+', '+a),'_blank');}
 function resetAll(b){
