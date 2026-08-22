@@ -127,6 +127,15 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 .readout .cursor{display:inline-block;width:8px;height:15px;background:var(--cyan);vertical-align:-2px;animation:blink .95s step-end infinite}
 @keyframes blink{50%{opacity:0}}
 
+/* report back from the field — the handoff */
+.report{background:#0D1B18;border:1px solid var(--good);border-radius:9px;padding:14px;margin-top:12px}
+.report .lbl{color:var(--good)}
+.report .ask{margin:9px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:15.5px;line-height:1.45;color:var(--text)}
+.frag{background:var(--amber);color:#0B1014;border-radius:8px;padding:12px;margin-top:12px;
+  font-family:'JetBrains Mono',monospace;font-weight:800;font-size:12.5px;letter-spacing:.05em;line-height:1.5}
+.locked-note{margin-top:12px;padding:12px;border:1px dashed var(--line);border-radius:8px;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11.5px;color:var(--text-dim);line-height:1.5;text-align:center}
+
 /* task rows */
 .task{display:flex;gap:11px;align-items:flex-start;background:var(--panel-3);border:1px solid var(--line);
   border-radius:9px;padding:12px;margin-top:9px;width:100%;text-align:left;transition:.15s}
@@ -261,7 +270,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='command-deck-v1';
-var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0};
+var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,reports:{},frags:{}};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -310,7 +319,8 @@ var M=[
  tx:'Field agent. Your target is a very old store full of candy. When you get inside, find the oldest thing you can see. Do not touch it. Point at it and say, found it.',
  cmdTask:'Work out the store from the riddle, then direct {D} there. Do not say the answer out loud in the car — only the directions.',
  fieldTask:'Find the oldest thing in the store. Point, do not touch. Say FOUND IT out loud.',
- drvTask:'Drive where {C} tells you. Do not ask what the mission is.'
+ drvTask:'Drive where {C} tells you. Do not ask what the mission is.',
+ report:{ask:'What did {F} say the oldest thing was?', accept:null, hint:null, frag:'INTEL FRAGMENT 1 of 8: the word you are building starts with T.'}
 },
 {
  l:'E', stop:1, at:'Inside stop one',
@@ -322,7 +332,8 @@ var M=[
  cmdTask:'Choose three sweets {F} has never had. Keep the names secret. Spend up to fifteen dollars.',
  fieldTask:'Taste each one and guess what it is BEFORE anyone tells you.',
  drvTask:'Pay. Say nothing about what any of it is.',
- money:15
+ money:15,
+ report:{ask:'What did {F} guess each sweet was?', accept:null, hint:null, frag:'INTEL FRAGMENT 2 of 8: second letter is E.'}
 },
 {
  l:'A', stop:1, at:'Outside stop one',
@@ -334,7 +345,8 @@ var M=[
  tx:'Field agent. Your job is to ask a grown-up who works here one question. Ask them: what year was this building built? Then remember the number and tell your commander.',
  cmdTask:'You may NOT ask. {F} has to. Type the year in when he reports it.',
  fieldTask:'Ask a grown-up: "What year was this building built?" Remember the number.',
- drvTask:'Stand back. Let {F} do the talking, even if it takes a minute.'
+ drvTask:'Stand back. Let {F} do the talking, even if it takes a minute.',
+ report:{ask:'What YEAR did the grown-up tell {F}?', accept:['1790'], hint:'It is in the seventeen hundreds and ends in a zero.', frag:'INTEL FRAGMENT 3 of 8: third letter is A.'}
 },
 {
  l:'M', stop:2, at:'On the way to stop two',
@@ -346,7 +358,8 @@ var M=[
  tx:'Field agent. Next target has eighteen holes of mini golf, indoors, inside a giant greenhouse. Your job when you get there is to find one plant taller than your commander.',
  cmdTask:'Solve it, then navigate {D} there. Still no spoilers.',
  fieldTask:'Find a plant taller than {C}. Stand next to it to prove it.',
- drvTask:'Drive. Still no questions.'
+ drvTask:'Drive. Still no questions.',
+ report:{ask:'What plant did {F} find that was taller than you?', accept:null, hint:null, frag:'INTEL FRAGMENT 4 of 8: fourth letter is M.'}
 },
 {
  l:'W', stop:2, at:'At stop two',
@@ -358,7 +371,8 @@ var M=[
  cmdTask:'Describe one flavour to {F} using only colours and feelings. Never say its name. Spend up to twenty-five dollars.',
  fieldTask:'Choose from the description alone. No peeking at the board.',
  drvTask:'Pay, and order the same thing {F} picked. Solidarity.',
- money:25
+ money:25,
+ report:{ask:'What flavour did {F} choose from your description — and was he happy?', accept:null, hint:null, frag:'INTEL FRAGMENT 5 of 8: fifth letter is W.'}
 },
 {
  l:'O', stop:2, at:'At stop two',
@@ -369,7 +383,8 @@ var M=[
  tx:'Field agent. Mini golf. Important — there is only one score for the whole crew. If you do badly, everybody did badly. If you do well, everybody did well. There is no beating anybody today.',
  cmdTask:'Keep the single crew score. Say it out loud after every hole.',
  fieldTask:'Play. Cheer for the other two as loudly as for yourself.',
- drvTask:'Take the hardest shot on every hole. You are the grown-up.'
+ drvTask:'Take the hardest shot on every hole. You are the grown-up.',
+ report:{ask:'What was the crew\'s single score?', accept:null, hint:null, frag:'INTEL FRAGMENT 6 of 8: sixth letter is O.'}
 },
 {
  l:'R', stop:3, at:'On the way to stop three',
@@ -381,7 +396,8 @@ var M=[
  tx:'Field agent. Final target. Go-karts, laser tag, bowling, trampolines, and sixty arcade machines. You get ten dollars on a card. But there is one last rule coming.',
  cmdTask:'Decode it and navigate. Last drive of the day.',
  fieldTask:'Nothing yet. Save your energy.',
- drvTask:'Drive where told. You are nearly off duty.'
+ drvTask:'Drive where told. You are nearly off duty.',
+ report:{ask:'Ask {F} which of the five things he most wants to do. Type his answer.', accept:null, hint:null, frag:'INTEL FRAGMENT 7 of 8: seventh letter is R.'}
 },
 {
  l:'K', stop:3, at:'At stop three',
@@ -393,7 +409,8 @@ var M=[
  cmdTask:'Ten dollars each on the card. {F} chooses the together-game. You have to agree to it.',
  fieldTask:'YOU choose the one game all three play together. Choose well.',
  drvTask:'Play it. Properly. No phone in your hand.',
- money:60
+ money:60,
+ report:{ask:'Which game did {F} choose for all three of you?', accept:null, hint:null, frag:'FINAL FRAGMENT: eighth letter is K. Now read all eight out loud.'}
 }];
 
 var STOPS=[
@@ -431,7 +448,7 @@ function renderMission(){
       '<h3>'+esc(M.map(function(m){return m.l;}).join(''))+'</h3>'+
       '<p class="read" style="margin-top:10px;font-size:15.5px;line-height:1.55;color:var(--text)">'+
       'Eight missions. '+esc(C())+' never did a field task. '+esc(F())+' never read a word. '+
-      'Neither of you could have finished one single card alone. That is what the letters spell.</p>'+
+      'Neither of you could have finished one single card alone. That is what the letters spell.</p>'+'<div class="frag" style="margin-top:12px">'+esc(F())+' reported back on every single mission. Without his eight reports, '+esc(C())+' never would have unlocked one letter.</div>'+
       '<button class="btn go" style="margin-top:13px" onclick="say(\'Teamwork. '+esc(C())+' ran the operation. '+esc(F())+' ran the field. Neither of you could have done one card alone.\')">🔊 READ IT TO '+esc(F().toUpperCase())+'</button>'+
       '</div>';
     return;
@@ -485,8 +502,30 @@ function renderMission(){
     }
 
     var all=S.tasks[i+'_cmd']&&S.tasks[i+'_field']&&S.tasks[i+'_drv'];
-    h+='<button class="btn go" id="doneBtn" '+(all?'':'disabled')+' onclick="complete('+i+')">'+
-       (all?'✓ MISSION COMPLETE':'WAITING ON ALL THREE')+'</button>';
+
+    if(m.report){
+      var got=!!S.reports[i];
+      h+='<div class="report"><div class="lbl">▸ Report back from '+esc(F())+'</div>'+
+         '<p class="ask">'+esc(N(m.report.ask))+'</p>';
+      if(!got){
+        if(!all){
+          h+='<div class="locked-note">LOCKED — all three confirmations first</div>';
+        }else{
+          h+='<div class="guess"><input id="rep" placeholder="Type what '+esc(F())+' told you" autocomplete="off" '+
+             'onkeydown="if(event.key===\'Enter\')fileReport()"><button onclick="fileReport()">FILE</button></div>'+
+             '<div class="verdict" id="repv"></div>'+
+             (m.report.hint?'<button class="btn" onclick="repHint()">Need a hint?</button>':'');
+        }
+      }else{
+        h+='<div class="verdict yes" style="margin-top:10px">✓ FILED: '+esc(S.reports[i])+'</div>';
+      }
+      h+='</div>';
+      if(S.frags[i]) h+='<div class="frag">🔓 '+esc(m.report.frag)+'</div>';
+    }
+
+    var ready = all && (!m.report || !!S.reports[i]);
+    h+='<button class="btn go" id="doneBtn" '+(ready?'':'disabled')+' onclick="complete('+i+')">'+
+       (ready?'✓ MISSION COMPLETE':(all?'WAITING ON '+esc(F().toUpperCase())+"'S REPORT":'WAITING ON ALL THREE'))+'</button>';
   }
 
   h+='</div>';
@@ -566,6 +605,25 @@ function buzzWatch(i){
   var m=M[i];
   var body=encodeURIComponent('MISSION: '+N(m.tx));
   window.location.href='sms:'+encodeURIComponent(S.phone)+'&body='+body;
+}
+
+function fileReport(){
+  var i=S.i,m=M[i],el=document.getElementById('rep'),v=document.getElementById('repv');
+  var val=(el.value||'').trim();
+  if(!val){el.focus();return;}
+  if(m.report.accept){
+    var g=val.toLowerCase().replace(/[^a-z0-9]/g,'');
+    var ok=m.report.accept.some(function(a){return g.indexOf(a.replace(/[^a-z0-9]/g,''))>-1;});
+    if(!ok){v.className='verdict no';v.textContent='\u2717 That is not what the record says. Send '+F()+' back to ask again.';buzz(90);return;}
+  }
+  S.reports[i]=val; S.frags[i]=true; save(); buzz([25,60,25]);
+  say('Report filed. '+m.report.frag);
+  renderAll();
+}
+function repHint(){
+  var v=document.getElementById('repv');
+  v.className='verdict';v.style.color='var(--amber)';
+  v.textContent='HINT: '+M[S.i].report.hint;
 }
 
 function toggleTask(i,who){
