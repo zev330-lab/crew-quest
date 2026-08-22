@@ -103,6 +103,10 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 .riddle .lbl{color:var(--amber)}
 .riddle p{margin:9px 0 0;font-family:'Lexend',sans-serif;font-weight:600;font-size:16.5px;line-height:1.55;color:var(--text)}
 
+/* the number she reads out loud */
+.bigcode{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:46px;letter-spacing:.12em;
+  text-align:center;color:var(--amber);margin:12px 0 4px;text-shadow:0 0 22px rgba(240,180,41,.35)}
+
 /* (choices removed)
 .mapbtn2{color:var(--cyan)}
 /* old choice styles — a nine-year-old can solve this, not guess a proper noun */
@@ -270,14 +274,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
     <div class="guess">
       <input id="inDrv" placeholder="Driver's name" autocomplete="off">
     </div>
-    <div class="guess">
-      <input id="inPhone" placeholder="Field agent's phone/watch number (optional)" inputmode="tel" autocomplete="off">
-    </div>
     <button class="btn amber" onclick="saveCrew()">LOCK IN THE CREW</button>
-    <p class="foot" style="text-align:left;margin-top:10px">
-      The number is only used to open your own Messages app pre-filled, so the watch buzzes.
-      It never leaves this phone.
-    </p>
   </div>
 
   <div id="mission"></div>
@@ -297,8 +294,9 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 /* =========================================================
    STATE
    ========================================================= */
-var KEY='command-deck-v1';
-var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,reports:{},frags:{},codes:{}};
+var KEY='command-deck-v3';
+var CREW_OK_HASH=265138;
+var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -337,56 +335,53 @@ function say(text,onEnd){
    hears it. Letters spell the answer to the whole thing.
    ========================================================= */
 var M=[
-{ l:'T', stop:1, ch:260083,
-  place:'Wayside Country Store',
-  addr:'1015 Boston Post Rd E, Marlborough',
-  brief:'Drive here first. It is a candy store over 200 years old \u2014 a rich man once dragged the whole building here behind OXEN. Read that bit out loud in the car, they will not believe you.',
-  crew:'Buy three sweets nobody has ever tried. Up to $15.',
-  money:15 },
+{k:'confirm', l:'C', title:'Agree on the crew',
+ say:'Read the crew name out loud to {F}. He has to agree to it on his watch.',
+ wait:'He presses the button on his watch, then tells you he confirmed.'},
 
-{ l:'E', stop:1, ch:263954,
-  place:'Still at the Country Store',
-  addr:'1015 Boston Post Rd E, Marlborough',
-  brief:'Stay inside. This one is about the building itself, not the candy.',
-  crew:'Find the oldest thing in the shop. Everyone has to agree on it.' },
+{k:'code', l:'T', ch:260083, stop:1,
+ place:'Wayside Country Store', addr:'1015 Boston Post Rd E, Marlborough',
+ title:'Where are we going?',
+ say:'Press the button, then say "{F}, go." His watch has the code for the first place.',
+ wait:'He reads you three numbers.',
+ brief:'A candy store more than 200 years old. A rich man once dragged the whole building here behind OXEN.',
+ crew:'Buy three sweets nobody in the crew has ever tried. Up to $15.', money:15},
 
-{ l:'A', stop:1, ch:257323,
-  place:'Before you leave the store',
-  addr:'1015 Boston Post Rd E, Marlborough',
-  brief:'One question needs asking, and you are not allowed to ask it. Only your field agent can.',
-  crew:'He asks a grown-up what year this building was built. Remember the number.' },
+{k:'confirm', l:'E', stop:1, title:'Give {F} the challenge',
+ say:'Say "{F}, go." His watch reads him the challenge \u2014 you do not get to know what it is.',
+ wait:'He does it, presses his button, and tells you he confirmed.'},
 
-{ l:'M', stop:2, ch:264974,
-  place:"Trombetta's Farm",
-  addr:'655 Farm Rd, Marlborough',
-  brief:'Next stop. Eighteen holes of mini golf INDOORS, inside a giant greenhouse full of plants and rock paths. Tell the driver where to go.',
-  crew:'Play the course. ONE score for the whole crew \u2014 not one each.' },
+{k:'code', l:'A', ch:263954, stop:1, title:'One only {F} can do',
+ say:'Say "{F}, go." This one is his alone \u2014 you are not allowed to help.',
+ wait:'He reads you three numbers when it is done.'},
 
-{ l:'W', stop:2, ch:259303,
-  place:"Still at Trombetta's",
-  addr:'655 Farm Rd, Marlborough',
-  brief:'They make more than forty flavours of ice cream on site, that day.',
-  crew:'Everybody orders a flavour nobody in the crew has ever had. Up to $25.',
-  money:25 },
+{k:'code', l:'M', ch:264974, stop:2,
+ place:"Trombetta's Farm", addr:'655 Farm Rd, Marlborough',
+ title:'Where next?',
+ say:'Press the button, then say "{F}, go." His watch has the next place.',
+ wait:'He reads you three numbers.',
+ brief:'Eighteen holes of mini golf INDOORS, inside a greenhouse full of plants and rock paths.',
+ crew:'Play the course. ONE score for the whole crew \u2014 not one each.'},
 
-{ l:'O', stop:2, ch:262220,
-  place:'Before you leave the farm',
-  addr:'655 Farm Rd, Marlborough',
-  brief:'One last thing here, and it is the nicest one of the day.',
-  crew:'Each person says one thing they are glad somebody ELSE in the crew did today.' },
+{k:'confirm', l:'W', stop:2, title:'Give {F} the challenge',
+ say:'Say "{F}, go." His watch has the challenge for this place.',
+ wait:'He does it, presses his button, tells you he confirmed.'},
 
-{ l:'R', stop:3, ch:258163,
-  place:'Apex Entertainment',
-  addr:'21 Apex Dr, Marlborough',
-  brief:'Final destination. Go-karts, laser tag, bowling, an arcade, and a trampoline park all behind one door. Navigate the driver there.',
-  crew:'Your field agent picks what the crew does first. Everybody has to say yes.' },
+{k:'code', l:'O', ch:259303, stop:2, title:'The ice cream rule',
+ say:'Say "{F}, go." His watch has the rule. Up to $25 here.',
+ wait:'He reads you three numbers when everyone has theirs.', money:25},
 
-{ l:'K', stop:3, ch:261014,
-  place:'The last rule at Apex',
-  addr:'21 Apex Dr, Marlborough',
-  brief:'Ten dollars each on the arcade card. Spend it however you like.',
-  crew:'Nobody goes home until all three of you play ONE game together. Same machine, same moment.',
-  money:60 }
+{k:'code', l:'R', ch:258163, stop:3,
+ place:'Apex Entertainment', addr:'21 Apex Dr, Marlborough',
+ title:'Last destination',
+ say:'Press the button, then say "{F}, go."',
+ wait:'He reads you three numbers.',
+ brief:'Go-karts, laser tag, bowling, a trampoline park and an arcade, all behind one door.',
+ crew:'Ten dollars each on the arcade card.'},
+
+{k:'code', l:'K', ch:261014, stop:3, title:'The last rule',
+ say:'Say "{F}, go." His watch has the final challenge, and he gets to choose.',
+ wait:'He reads you the last three numbers.', money:60}
 ];
 
 var STOPS=[
@@ -419,67 +414,79 @@ function renderHead(){
 
 function renderMission(){
   var host=document.getElementById('mission');
+  if(!S.cmd){ host.innerHTML=''; return; }
+
   if(S.i>=M.length){
-    host.innerHTML='<div class="panel amber"><div class="lbl">\u25c8 Operation complete</div>'+
+    host.innerHTML='<div class="panel amber"><div class="lbl">\u25c8 Mission complete</div>'+
       '<h3>'+esc(M.map(function(m){return m.l;}).join(' '))+'</h3>'+
-      '<p class="ask" style="margin-top:10px">Eight codes. '+esc(C())+' could not get a single one without '+esc(F())+
-      ', and '+esc(F())+' never knew where he was going without '+esc(C())+'.</p>'+
-      '<button class="btn go" style="margin-top:12px" onclick="say(\'Teamwork. Eight codes. Neither of you could do one without the other.\')">\ud83d\udd0a READ IT OUT LOUD</button></div>';
+      '<p class="ask" style="margin-top:10px">Every single step needed '+esc(F())+
+      '. You never once found out where you were going on your own.</p>'+
+      '<button class="btn go" style="margin-top:12px" onclick="say(\'Mission complete. Every step needed both of you.\')">\ud83d\udd0a READ IT OUT LOUD</button></div>';
     return;
   }
-  var m=M[S.i], i=S.i, unlocked=!!S.codes[i];
-  var h='';
 
-  h+='<div class="panel hot"><div class="lbl">\u25c8 Stage '+(i+1)+' of '+M.length+'</div>'+
-     '<h3>'+esc(m.place)+'</h3>'+
-     '<div class="a" style="font-size:13px;color:var(--text-dim);font-weight:700;margin-top:4px">'+esc(m.addr)+'</div>';
+  var m=M[S.i], i=S.i, cleared=!!S.codes[i];
+  var h='<div class="panel hot"><div class="lbl">\u25c8 Step '+(i+1)+' of '+M.length+'</div>'+
+        '<h3>'+esc(N(m.title))+'</h3>';
 
-  h+='<div class="riddle"><div class="lbl">Read this to the crew</div><p>'+esc(m.brief)+'</p></div>';
+  if(!cleared){
+    h+='<div class="riddle"><div class="lbl">Do this</div><p>'+esc(N(m.say))+'</p></div>';
 
-  h+='<div class="report"><div class="lbl">\u25b8 What the crew does here</div>'+
-     '<p class="ask">'+esc(m.crew)+'</p></div>';
-
-  if(m.money){
-    h+='<div class="guess" style="margin-top:11px">'+
-       '<input id="sp" inputmode="decimal" placeholder="Spent here (about $'+m.money+')">'+
-       '<button onclick="logSpend()">LOG</button></div>'+
-       '<div class="verdict" style="color:var(--text-dim)">Purse: $'+purse()+' of $100</div>';
-  }
-
-  h+='<button class="btn mapbtn2" onclick="openMap(\''+esc(m.place)+'\',\''+esc(m.addr)+'\')">\ud83d\udccd OPEN IN MAPS</button>';
-
-  h+='<div class="handoff"><div class="lbl">\u25b8 You need a code to continue</div>'+
-     '<p class="ask">Say out loud: <strong>"'+esc(F())+', mission '+(i+1)+'."</strong><br>'+
-     'He taps that number on his watch, does the job, and his watch gives him a 3-digit code.</p>'+
-     '<p class="ask" style="color:var(--text-dim);font-size:13.5px;margin-top:8px">'+
-     'Only his watch has it. There is no other way past this screen.</p>';
-
-  if(!unlocked){
-    h+='<div class="guess"><input id="code" inputmode="numeric" maxlength="3" placeholder="3-digit code" '+
-       'autocomplete="off" onkeydown="if(event.key===\'Enter\')checkCode()"><button onclick="checkCode()">UNLOCK</button></div>'+
-       '<div class="verdict" id="codev"></div>';
+    if(m.k==='confirm'){
+      h+='<div class="handoff"><div class="lbl">\u25b8 Waiting on '+esc(F())+'</div>'+
+         '<p class="ask">'+esc(N(m.wait))+'</p>'+
+         '<button class="btn go" style="margin-top:11px" onclick="confirmStep('+i+')">'+
+         esc(F().toUpperCase())+' CONFIRMED \u2014 GO ON</button></div>';
+    }else{
+      h+='<div class="handoff"><div class="lbl">\u25b8 Waiting on '+esc(F())+'</div>'+
+         '<p class="ask">'+esc(N(m.wait))+'</p>'+
+         '<div class="guess"><input id="code" inputmode="numeric" maxlength="3" placeholder="His three numbers" '+
+         'autocomplete="off" onkeydown="if(event.key===\'Enter\')checkCode()"><button onclick="checkCode()">ENTER</button></div>'+
+         '<div class="verdict" id="codev"></div>'+
+         '<p class="ask" style="color:var(--text-dim);font-size:13px;margin-top:9px">'+
+         'Only his watch has these numbers.</p></div>';
+    }
   }else{
-    h+='<div class="verdict yes" style="margin-top:10px">\u2713 CODE ACCEPTED \u2014 '+esc(F())+' did his job</div>'+
-       '<button class="btn go" style="margin-top:11px" onclick="advance('+i+')">NEXT STAGE \u203a</button>';
+    if(m.place){
+      h+='<div class="frag">\ud83d\udd13 DESTINATION UNLOCKED</div>'+
+         '<h3 style="margin-top:10px">'+esc(m.place)+'</h3>'+
+         '<div class="a" style="font-size:13px;color:var(--text-dim);font-weight:700;margin-top:4px">'+esc(m.addr)+'</div>'+
+         '<button class="btn mapbtn2" onclick="openMap(\''+esc(m.place)+'\',\''+esc(m.addr)+'\')">\ud83d\udccd OPEN IN MAPS</button>';
+    }
+    if(m.brief) h+='<div class="riddle"><div class="lbl">Read this to the crew</div><p>'+esc(m.brief)+'</p></div>';
+    if(m.crew)  h+='<div class="report"><div class="lbl">\u25b8 What happens here</div><p class="ask">'+esc(m.crew)+'</p></div>';
+    if(m.money){
+      h+='<div class="guess" style="margin-top:11px">'+
+         '<input id="sp" inputmode="decimal" placeholder="Spent here (about $'+m.money+')">'+
+         '<button onclick="logSpend()">LOG</button></div>'+
+         '<div class="verdict" style="color:var(--text-dim)">Purse: $'+purse()+' of $100</div>';
+    }
+    h+='<button class="btn go" style="margin-top:11px" onclick="advance('+i+')">'+
+       (m.place?'WE ARE HERE \u2014 NEXT \u203a':'DONE \u2014 NEXT \u203a')+'</button>';
   }
-  h+='</div></div>';
 
-  if(i>0) h+='<button class="btn" onclick="back()">\u2039 Previous stage</button>';
+  h+='</div>';
+  if(i>0) h+='<button class="btn" onclick="back()">\u2039 Previous step</button>';
   host.innerHTML=h;
 }
-
 
 function renderStops(){
   var host=document.getElementById('stops');host.innerHTML='';
   STOPS.forEach(function(st){
-    var reached=M.some(function(m,i){return m.stop===st.n && S.tasks['done_'+i];});
-    var known=M.some(function(m,i){return m.stop===st.n && (S.solved[i]||!m.accept) && i<=S.i;});
+    // A destination is revealed only once the crew has actually reached a
+    // stage belonging to it. Future stops stay sealed, so nobody can read
+    // ahead and work out where the day is going.
+    var firstStage = -1;
+    M.forEach(function(m,i){ if(m.stop===st.n && firstStage<0) firstStage=i; });
+    var open = firstStage>=0 && !!S.codes[firstStage];
     var d=document.createElement('div');
-    d.className='stopcard'+(known||reached?'':' locked');
-    d.innerHTML='<div class="n">STOP '+st.n+(known||reached?'':' · LOCKED')+'</div>'+
-      '<h4>'+(known||reached?esc(st.name):'— decode mission to unlock —')+'</h4>'+
-      (known||reached?'<div class="a">'+esc(st.addr)+'</div>'+
-        '<button class="mapbtn" onclick="openMap(\''+esc(st.name)+'\',\''+esc(st.addr)+'\')">📍 OPEN IN MAPS</button>':'');
+    d.className='stopcard'+(open?'':' locked');
+    d.innerHTML='<div class="n">DESTINATION '+st.n+(open?'':' \u00b7 SEALED')+'</div>'+
+      '<h4>'+(open?esc(st.name):'\u2014 locked \u2014')+'</h4>'+
+      (open
+        ? '<div class="a">'+esc(st.addr)+'</div>'+
+          '<button class="mapbtn" onclick="openMap(\''+esc(st.name)+'\',\''+esc(st.addr)+'\')">\ud83d\udccd OPEN IN MAPS</button>'
+        : '<div class="a">'+esc(F())+' has to unlock this one.</div>');
     host.appendChild(d);
   });
 }
@@ -493,7 +500,6 @@ function saveCrew(){
   S.cmd=document.getElementById('inCmd').value.trim();
   S.field=document.getElementById('inField').value.trim();
   S.drv=document.getElementById('inDrv').value.trim();
-  S.phone=document.getElementById('inPhone').value.trim();
   if(!S.cmd||!S.field){alert('Commander and field agent both need names.');return;}
   save();buzz(20);renderAll();
 }
@@ -502,10 +508,28 @@ function saveCrew(){
 
 /* The phone deliberately has no way to produce the field agent's mission.
    It cannot speak it, display it, or skip it — only his watch holds it. */
+function checkCrew(){
+  var el=document.getElementById('crewcode'),v=document.getElementById('crewv');
+  var g=(el.value||'').replace(/\D/g,'');
+  if(!g){el.focus();return;}
+  if(hashCode(g)!==CREW_OK_HASH){
+    v.className='verdict no';
+    v.textContent='\u2717 Not his number. He has to tap I AGREE on his watch first.';
+    buzz(90); el.value=''; return;
+  }
+  S.crewOK=true; save(); buzz([25,60,25,60,120]);
+  say('Crew agreed. '+F()+' is your field agent. Stage one.');
+  renderAll();
+}
 function hashCode(str){
   var v=7;
   for(var i=0;i<str.length;i++){ v=(v*31+str.charCodeAt(i)) & 0xFFFFFF; }
   return v;
+}
+function confirmStep(i){
+  S.codes[i]='confirmed'; save(); buzz([25,60,25]);
+  say(F()+' confirmed.');
+  renderAll();
 }
 function checkCode(){
   var i=S.i,m=M[i],el=document.getElementById('code'),v=document.getElementById('codev');
@@ -513,7 +537,7 @@ function checkCode(){
   if(!g){el.focus();return;}
   if(hashCode(g)!==m.ch){
     v.className='verdict no';
-    v.textContent='\u2717 WRONG CODE. Only '+F()+"'s watch has it. He has to finish the mission first.";
+    v.textContent='\u2717 Not the right number. Ask '+F()+' to read his numbers again.';
     buzz(90); el.value=''; el.focus(); return;
   }
   S.codes[i]=g; save(); buzz([25,60,25,60,120]);
@@ -533,10 +557,15 @@ document.getElementById('flash').addEventListener('click',function(){this.classL
 
 function advance(i){
   var med=document.getElementById('medal');
-  med.innerHTML='<div class="ltr">'+M[i].l+'</div><div class="t">CREW POINT</div>'+
-    '<div class="s">'+esc(F())+' unlocked that,<br>not you</div>';
+  var nxt=M[i+1];
+  var newPlace = nxt && nxt.stop!==M[i].stop;
+  med.innerHTML='<div class="ltr">'+M[i].l+'</div>'+
+    '<div class="t">'+(newPlace?'NEW DESTINATION UNLOCKED':'CREW POINT')+'</div>'+
+    '<div class="s">'+(newPlace
+      ? esc(F())+"'s code opened<br>the next place"
+      : esc(F())+' unlocked that,<br>not you')+'</div>';
   document.getElementById('flash').classList.add('on');
-  buzz([40,70,40]); say('Crew point. '+F()+' unlocked that one.');
+  buzz([40,70,40]); say(newPlace ? F()+"'s code just unlocked the next destination." : 'Crew point. '+F()+' unlocked that one.');
   setTimeout(function(){
     document.getElementById('flash').classList.remove('on');
     S.i=i+1; save(); renderAll(); window.scrollTo({top:0,behavior:'smooth'});
