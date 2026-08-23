@@ -284,7 +284,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 
   <div class="panel" style="margin-top:20px">
     <div class="lbl">◈ Moving to another phone?</div>
-    <p class="ask" style="margin-top:8px">Lock in the crew above, then pick up where the other phone left off. Earlier steps count as done.</p>
+    <p class="ask" style="margin-top:8px">Type the step number the crew is really on and press GO. Everything before it counts as done. Use this if the crew got ahead of the app, or to continue on a different phone.</p>
     <div class="guess" style="margin-top:10px">
       <input id="jump" inputmode="numeric" maxlength="2" placeholder="Pick up from step (1–15)" autocomplete="off"
              onkeydown="if(event.key==='Enter')jumpTo()"><button onclick="jumpTo()">GO</button>
@@ -307,6 +307,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='command-deck-v4';
+var TAPE='2026-08-23-pm-dollar-altitude';
 var CREW_OK_HASH=265138;
 var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
@@ -677,4 +678,26 @@ renderAll();
     if(f) f.textContent='\u2713 Saved to this phone \u2014 works without signal';
   }).catch(function(){});
 })();
+
+/* SELF-UPDATE. A home-screen web app stays alive in the background, so
+   reopening it does NOT refetch -- which is how a phone kept showing an old
+   afternoon after a new one was deployed. Check the deployed tape id on open
+   and on resume, and reload when it differs. Progress is in localStorage, so a
+   reload never costs the crew their place. */
+function checkTape(){
+  try{
+    fetch('./index.html?cb='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){
+      var m=t.match(/var TAPE='([^']+)'/);
+      if(m && m[1]!==TAPE){
+        if(sessionStorage.getItem('reloadedFor')===m[1]) return;
+        sessionStorage.setItem('reloadedFor',m[1]);
+        location.reload();
+      }
+    }).catch(function(){});
+  }catch(e){}
+}
+document.addEventListener('visibilitychange',function(){ if(!document.hidden) checkTape(); });
+window.addEventListener('focus',checkTape);
+checkTape();
+
 </script>
