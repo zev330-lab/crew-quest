@@ -1,9 +1,9 @@
 # Crew Quest — working state as of 2026-08-22 (evening: DAY-TWO tape)
 
 A two-device scavenger hunt for a 9-year-old commander and a 6-year-old field
-agent who cannot read. **Both halves are built and tested. The phone is live.
-The watch build is staged — the Series 6 still carries DAY ONE until it is
-reinstalled (needs the watch worn + unlocked; see "To resume").**
+agent who cannot read. **Both halves are built, tested, live and INSTALLED.**
+Day two landed on Parker's Series 6 at 2026-08-23 09:47 and was verified
+against the live phone: all 8 codes hash-match, day-one text is gone.
 
 Day one (2026-08-22) was never played. Day two is a whole-day tape for
 Sunday 2026-08-23: breakfast through a finale, with home time in the middle.
@@ -146,14 +146,19 @@ Team DU52C58N97 · bundle com.zevgt.crewquest
 
 ## To resume
 
-**ONE thing is pending: install the day-two build on Parker's Series 6.** The
-build at `/tmp/CQDev/Build/Products/Debug-watchos/CrewQuest.app` succeeded on
-2026-08-22 22:27; the install timed out because the watch was not worn/unlocked
-(`Network.NWError error 60` right after "Enabling developer disk image
-services" is that signature). If `/tmp/CQDev` is gone, rebuild with the command
-below — it is ~1 minute. Verify afterwards with
-`xcrun devicectl device info apps --device BE241748-5B26-5E73-90CD-F4651F531802 | grep -i crewquest`
-and, on the watch, that the first screen says AGREE TO THE CREW (not a mid-day step).
+Both apps are complete, installed and interlocked. Nothing is blocked.
+
+**Verifying which tape a build carries.** `strings` on the main executable finds
+nothing — a Debug build puts the code in `CrewQuest.app/CrewQuest.debug.dylib`.
+Grep THAT. Day two contains "hole in the middle", "Elvis", "quiet time"; day one
+contained "Four one seven". Note the briefing text of a `.code` step does not
+always repeat its digits — `RevealView` displays and speaks every code itself —
+so "the spoken words are missing" is not a defect.
+
+**A stale phone page is the failure mode to watch.** iOS caches the home-screen
+page. The header now reads `DAY 2 · FIRST CODE STARTS WITH 3`; if it does not
+say DAY 2, the phone is serving yesterday's HTML and will reject every code the
+watch gives. Fix: pull down to refresh, or remove and re-add the home screen icon.
 
 **To change the game:** edit `Sources/Cards.swift` (watch) and the `M` array in
 `index.html` (phone) **together** — the hash test exists to catch you if you
