@@ -307,7 +307,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='command-deck-v4';
-var TAPE='2026-08-23-pm-dollar-altitude-b';
+var TAPE='2026-08-23-pm-dollar-altitude-c';
 var CREW_OK_HASH=265138;
 var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
@@ -444,12 +444,22 @@ var M=[
  crew:'Before anybody scatters: each person says the ONE part of today they would do again.'}
 ];
 
-var STOPS=[
-{n:1,name:'Bagels',addr:'Main Street Bagel Factory, 51 Main St, Hudson'},
-{n:2,name:"Mommy's house",addr:''},
-{n:3,name:'Base camp \u2014 home',addr:''},
-{n:4,name:"The crew's choice",addr:''}
-];
+/* DERIVED from the tape above -- never hand-maintained. This used to be a
+   second hardcoded list, and on 2026-08-23 the tape was rewritten while this
+   was not: the steps said Dollar Tree and Altitude while the destination cards
+   still showed the old four. A phone looked "unchanged" through three correct
+   deploys because of it. One source of truth now: the steps. */
+var STOPS=(function(){
+  var byStop={};
+  M.forEach(function(m){
+    if(!m.stop || !m.place) return;
+    var cur=byStop[m.stop];
+    // prefer the beat that carries a real address; otherwise the first named one
+    if(!cur || (!cur.addr && m.addr)) byStop[m.stop]={n:m.stop,name:m.place,addr:m.addr||''};
+  });
+  return Object.keys(byStop).map(function(k){return byStop[k];})
+               .sort(function(a,b){return a.n-b.n;});
+})();
 
 /* =========================================================
    RENDER
