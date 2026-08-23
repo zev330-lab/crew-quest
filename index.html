@@ -307,7 +307,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='crewquest-op2';
-var TAPE='2026-08-23-op2-stagezero';
+var TAPE='2026-08-23-op2-stagezero-b';
 var CREW_OK_HASH=265138;
 var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
@@ -527,7 +527,7 @@ function renderStops(){
     // Open once the crew has REACHED this stop -- either they entered its
     // first code, or the run is already at/past that beat (a jump skips the
     // code, and the destination you are standing in must never read locked).
-    var open = firstStage>=0 && (!!S.codes[firstStage] || S.i>=firstStage);
+    var open = firstStage>=0 && !!S.codes[firstStage];
     var d=document.createElement('div');
     d.className='stopcard'+(open?'':' locked');
     d.innerHTML='<div class="n">DESTINATION '+st.n+(open?'':' \u00b7 SEALED')+'</div>'+
