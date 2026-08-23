@@ -294,6 +294,8 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 
   <button class="btn warn" style="margin-top:20px" onclick="resetAll(this)">↺ Start a brand new operation</button>
 
+  <p class="foot" id="offline">Saving to this phone so it works without signal…</p>
+
   <p class="foot">
     Every mission needs both kids. The commander never does the field task.
     The field agent never sees the words. Neither one can finish alone — that is the point.
@@ -376,15 +378,15 @@ var M=[
  wait:'He does it, presses his button, tells you he confirmed.'},
 
 {k:'code', l:'A', ch:258344, stop:3,
- place:'The Riverwalk', addr:'Assabet River Rail Trail, Lincoln St & Highland St, Marlborough',
+ place:'Solomon Pond Mall', addr:'601 Donald J Lynch Blvd, Marlborough',
  title:'Where next?',
  say:'Press the button, then say "{F}, go." His watch has the next place.',
  wait:'He reads you three numbers.',
- brief:'A flat path along the old railway and the river. It costs nothing. If it is pouring, {D} drives to the next place and the crew comes back to this one later.',
- crew:'Walk until the crew agrees on a turnaround spot. Nobody decides alone.'},
+ brief:'RAIN PLAN. The river walk is off \u2014 this one is indoors and it still costs nothing. Doors open at 11am. If the crew gets here early, {D} flips this stop with the next one and you come back after mini golf.',
+ crew:'Walk the whole loop together. Nobody decides the turnaround alone.'},
 
-{k:'confirm', l:'Y', stop:3, title:'Give {F} the walk challenge',
- say:'Say "{F}, go." His watch has the challenge for the walk.',
+{k:'confirm', l:'Y', stop:3, title:'Give {F} the challenge',
+ say:'Say "{F}, go." His watch has the challenge for this place.',
  wait:'All three of you do it. He presses his button, tells you he confirmed.'},
 
 {k:'code', l:'T', ch:261288, stop:4,
@@ -439,7 +441,7 @@ var M=[
 var STOPS=[
 {n:1,name:'Bagels',addr:'Main Street Bagel Factory, 51 Main St, Hudson'},
 {n:2,name:"Mommy's house",addr:''},
-{n:3,name:'The Riverwalk',addr:'Assabet River Rail Trail, Lincoln St & Highland St, Marlborough'},
+{n:3,name:'Solomon Pond Mall',addr:'601 Donald J Lynch Blvd, Marlborough'},
 {n:4,name:"Trombetta's Farm",addr:'655 Farm Rd, Marlborough'},
 {n:5,name:'Base camp',addr:''},
 {n:6,name:'Wayside Country Store',addr:'1015 Boston Post Rd E, Marlborough'},
@@ -653,4 +655,14 @@ function resetAll(b){
 }
 
 renderAll();
+
+/* Offline. A reload with no signal used to give a blank screen; the worker
+   keeps a copy of the app on the phone so the game survives a dead zone. */
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('sw.js').then(function(){
+    var f=document.getElementById('offline');
+    if(f) f.textContent='\u2713 Saved to this phone \u2014 works without signal';
+  }).catch(function(){});
+})();
 </script>
