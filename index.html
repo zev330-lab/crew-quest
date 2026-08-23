@@ -279,9 +279,6 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 
   <div id="mission"></div>
 
-  <p class="foot" style="margin-top:18px">Today\u2019s plan ends at base camp, after the slime and the Roblox game.
-     Steps 8 onward are still here if the crew decides to go back out \u2014 they are not cancelled, just not the plan.</p>
-
   <div class="sect"><div class="lbl">Destinations</div><hr></div>
   <div id="stops"></div>
 
@@ -383,72 +380,70 @@ var M=[
 {k:'code', l:'A', ch:258344, stop:3,
  place:'Base camp \u2014 home', addr:'',
  title:'Where next?',
- say:'Press the button, then say "{F}, go." His watch has the next place. \u26a0 His watch still has the old rainy-morning plan and will say the place is OUTSIDE. Tell {F}: "It rained, so we changed it \u2014 we are going home." The number he gives you is still right.',
- wait:'He reads you three numbers.',
- brief:'Home for the rest of the day. Two missions run at the same time, and neither crew is allowed to rush the other.',
- crew:'{C}: your slime studio \u2014 make something nobody has made before. {F} and {D}: build a Roblox game on the computer. You are each building something; that is the same job in two rooms.'},
-
-{k:'confirm', l:'Y', stop:3, title:'The last mission \u2014 show each other',
- say:'Say "{F}, go." His watch has the challenge. \u26a0 It will say "on the walk" and mention a bug or a tree \u2014 tell {F} it means something else today: when the building is done, each of you shows the other two ONE thing you made that they have not seen.',
- wait:'All three of you show yours. He presses his button, tells you he confirmed.'},
-
-{k:'code', l:'T', ch:261288, stop:4,
- place:"Trombetta's Farm", addr:'655 Farm Rd, Marlborough',
- title:'Where next?',
  say:'Press the button, then say "{F}, go." His watch has the next place.',
  wait:'He reads you three numbers.',
- brief:'Eighteen holes of mini golf INDOORS, inside a greenhouse full of plants and rock paths.',
- crew:'Play the course. ONE score for the whole crew — not one each.', money:30},
+ brief:'Home for the middle of the day. Two builds run at the same time, and neither one is allowed to rush the other.',
+ crew:'{C}: your slime studio \u2014 make one nobody has made before. {F} and {D}: build a Roblox game on the computer.'},
 
-{k:'confirm', l:'O', stop:4, title:'Give {F} the challenge',
- say:'Say "{F}, go." His watch has the challenge for this place.',
- wait:'He does it, presses his button, tells you he confirmed.'},
+{k:'confirm', l:'Y', stop:3, title:'Give {F} the build challenge',
+ say:'Say "{F}, go." His watch gives him the build challenge and tells him nobody may rush anybody.',
+ wait:'When all three of you have built something, each shows the other two ONE thing they have not seen. Then he presses his button.'},
 
-{k:'code', l:'G', ch:257416, stop:5,
- place:'Base camp', addr:'',
- title:'Where next?',
- say:'Press the button, then say "{F}, go." His watch has the code for the next place.',
+{k:'code', l:'T', ch:261288, stop:3,
+ place:'Lunch at base camp', addr:'',
+ title:'Lunch',
+ say:'Press the button, then say "{F}, go." This one is not a new place \u2014 his watch will tell him it is lunch, at home.',
  wait:'He reads you three numbers.',
- brief:'Home again \u2014 or still home. Either way this is the lunch beat. Lunch is a crew job: everybody makes one part, the commander runs the kitchen, {D} only helps when asked.',
- crew:'Eat at the same table, phones and watches down. Then quiet time — his watch has the rules.'},
+ brief:'Lunch, at home. Nobody drives anywhere.',
+ crew:'Everybody makes one part of it. {C} runs the kitchen. {D} only helps when asked. Eat at the same table with the watches and phones down.'},
 
-{k:'confirm', l:'E', stop:5, title:'Lunch, then quiet time',
- say:'Say "{F}, go." His watch has the whole base-camp challenge. It is a long one — this step takes a while, and that is the point.',
- wait:'When lunch and quiet time are both done, he presses his button and tells you he confirmed.'},
+{k:'confirm', l:'O', stop:3, title:'Give {F} the lunch challenge',
+ say:'Say "{F}, go." His watch has the lunch rules.',
+ wait:'When lunch is eaten and the table is clear, he presses his button and tells you he confirmed.'},
 
-{k:'code', l:'T', ch:262995, stop:6,
- place:'Wayside Country Store', addr:'1015 Boston Post Rd E, Marlborough',
- title:'Where next?',
- say:'Press the button, then say "{F}, go." His watch has the next place.',
- wait:'He reads you three numbers.',
- brief:'A candy store more than 200 years old. A rich man once dragged the whole building here behind OXEN.',
- crew:'Buy three sweets nobody in the crew has ever tried. Up to $15.', money:15},
+{k:'code', l:'G', ch:257416, stop:4,
+ place:'{F} chooses where the crew goes', addr:'',
+ title:'The crew decides \u2014 and {F} has the deciding vote',
+ say:'Press the button, then say "{F}, go." His watch tells him this one is HIS. Read him all three places out loud, wait, and let him pick. If the crew cannot agree, his pick is the one that counts.',
+ wait:'He reads you three numbers, then tells you where the crew is going.',
+ brief:'Read these out loud to {F}. All three are open right now.',
+ opts:[
+   {n:'Apex Entertainment', a:'21 Apex Dr, Marlborough', d:'Bowling, indoor go-karts, laser tag, bumper cars, 70+ arcade games. Open until 9pm.'},
+   {n:'Regal Solomon Pond', a:'591 Donald Lynch Blvd, Marlborough', d:'A movie on a big screen. Open until 11:30pm \u2014 check what is showing when you pick.'},
+   {n:"Trombetta's Farm", a:'655 Farm Rd, Marlborough', d:'Indoor mini golf inside a greenhouse, and ice cream after.'}
+ ],
+ crew:'Whatever {F} picks, the whole crew goes, and nobody sulks about it.'},
 
-{k:'confirm', l:'H', stop:6, title:'Give {F} the challenge',
- say:'Say "{F}, go." His watch reads him the challenge — you do not get to know what it is.',
- wait:'He does it, presses his button, and tells you he confirmed.'},
+{k:'confirm', l:'E', stop:4, title:'Lock the choice in',
+ say:'Say "{F}, go." His watch tells him to make all three of you say the choice out loud before anybody moves.',
+ wait:'All three of you say it out loud, everybody gets in the car, then he presses his button.'},
 
-{k:'code', l:'E', ch:263983, stop:7,
- place:'Apex Entertainment', addr:'21 Apex Dr, Marlborough',
- title:'Last destination',
+{k:'code', l:'T', ch:262995, stop:4,
+ place:'Wherever the crew chose', addr:'',
+ title:'We are here',
  say:'Press the button, then say "{F}, go."',
  wait:'He reads you three numbers.',
- brief:'Go-karts, laser tag, bowling, a trampoline park and an arcade, all behind one door.',
- crew:'Ten dollars each on the arcade card.'},
+ brief:'You made it. This is the place {F} picked.',
+ crew:'Get the crew in and paid for. Up to $60 here.', money:60},
 
-{k:'code', l:'R', ch:260240, stop:7, title:'The last rule',
- say:'Say "{F}, go." His watch has the final challenge, and he gets to choose.',
- wait:'He reads you the last three numbers.', money:60}
+{k:'confirm', l:'H', stop:4, title:'Give {F} the challenge',
+ say:'Say "{F}, go." His watch has the challenge for this place.',
+ wait:'All three of you do it \u2014 you and {D} too, not just him. Then he presses his button.'},
+
+{k:'code', l:'E', ch:263983, stop:4, title:'The crew treat',
+ say:'Say "{F}, go." His watch has the rule for the treat. Up to $25 here.',
+ wait:'He reads you three numbers when everybody has theirs.', money:25},
+
+{k:'code', l:'R', ch:260240, stop:4, title:'The last rule',
+ say:'Say "{F}, go." His watch has the final challenge, and he gets to choose it.',
+ wait:'He reads you the last three numbers.'}
 ];
 
 var STOPS=[
 {n:1,name:'Bagels',addr:'Main Street Bagel Factory, 51 Main St, Hudson'},
 {n:2,name:"Mommy's house",addr:''},
 {n:3,name:'Base camp \u2014 home',addr:''},
-{n:4,name:"Trombetta's Farm",addr:'655 Farm Rd, Marlborough'},
-{n:5,name:'Base camp',addr:''},
-{n:6,name:'Wayside Country Store',addr:'1015 Boston Post Rd E, Marlborough'},
-{n:7,name:'Apex Entertainment',addr:'21 Apex Dr, Marlborough'}
+{n:4,name:"The crew's choice",addr:''}
 ];
 
 /* =========================================================
@@ -510,13 +505,23 @@ function renderMission(){
   }else{
     if(m.place){
       h+='<div class="frag">\ud83d\udd13 DESTINATION UNLOCKED</div>'+
-         '<h3 style="margin-top:10px">'+esc(m.place)+'</h3>'+
+         '<h3 style="margin-top:10px">'+esc(N(m.place))+'</h3>'+
          (m.addr
            ? '<div class="a" style="font-size:13px;color:var(--text-dim);font-weight:700;margin-top:4px">'+esc(m.addr)+'</div>'+
-             '<button class="btn mapbtn2" onclick="openMap(\''+esc(m.place)+'\',\''+esc(m.addr)+'\')">\ud83d\udccd OPEN IN MAPS</button>'
+             '<button class="btn mapbtn2" onclick="openMap(\''+esc(N(m.place))+'\',\''+esc(m.addr)+'\')">\ud83d\udccd OPEN IN MAPS</button>'
            : '<div class="a" style="font-size:13px;color:var(--text-dim);font-weight:700;margin-top:4px">The crew knows the way.</div>');
     }
     if(m.brief) h+='<div class="riddle"><div class="lbl">Read this to the crew</div><p>'+esc(N(m.brief))+'</p></div>';
+    if(m.opts){
+      m.opts.forEach(function(o,oi){
+        h+='<div class="stopcard" style="margin-top:9px">'+
+           '<div class="n">CHOICE '+(oi+1)+'</div>'+
+           '<h4>'+esc(o.n)+'</h4>'+
+           '<div class="a">'+esc(o.a)+'</div>'+
+           '<p class="ask" style="margin:7px 0 0">'+esc(o.d)+'</p>'+
+           '<button class="mapbtn" onclick="openMap(\''+esc(o.n)+'\',\''+esc(o.a)+'\')">\ud83d\udccd OPEN IN MAPS</button></div>';
+      });
+    }
     if(m.crew)  h+='<div class="report"><div class="lbl">\u25b8 What happens here</div><p class="ask">'+esc(N(m.crew))+'</p></div>';
     if(m.money){
       h+='<div class="guess" style="margin-top:11px">'+
