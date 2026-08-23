@@ -236,7 +236,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 <main class="wrap">
 
   <section class="hero">
-    <div class="eyebrow">EYES ONLY · COMMANDER &nbsp;·&nbsp; DAY 2 &nbsp;·&nbsp; AFTERNOON: DOLLAR STORE, THEN ALTITUDE</div>
+    <div class="eyebrow">EYES ONLY · COMMANDER &nbsp;·&nbsp; NEW OPERATION &nbsp;·&nbsp; STAGE ZERO</div>
     <h1>COMMAND<span>DECK</span></h1>
     <p>You are running this operation. The phone is yours and nobody else's.
        Your field agent has the watch. He cannot read the mission — you have to
@@ -286,7 +286,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
     <div class="lbl">◈ Jump to a step</div>
     <p class="ask" style="margin-top:8px">Type the step number the crew is really on and press GO. Everything before it counts as done. Use this if the crew got ahead of the app, or to continue on a different phone.</p>
     <div class="guess" style="margin-top:10px">
-      <input id="jump" inputmode="numeric" maxlength="2" placeholder="Which step are you on? (1–15)" autocomplete="off"
+      <input id="jump" inputmode="numeric" maxlength="2" placeholder="Which step are you on?" autocomplete="off"
              onkeydown="if(event.key==='Enter')jumpTo()"><button onclick="jumpTo()">GO</button>
     </div>
     <div class="verdict" id="jumpv"></div>
@@ -306,8 +306,8 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 /* =========================================================
    STATE
    ========================================================= */
-var KEY='command-deck-v4';
-var TAPE='2026-08-23-pm-dollar-altitude-d';
+var KEY='crewquest-op2';
+var TAPE='2026-08-23-op2-stagezero';
 var CREW_OK_HASH=265138;
 var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
@@ -348,78 +348,37 @@ function say(text,onEnd){
    The commander never learns WHERE until the field agent's
    watch hands her three digits. Letters spell the day.
    ========================================================= */
-var BUDGET=150;
+var BUDGET=120;
 var M=[
-{k:'confirm', l:'B', title:'Agree on the crew',
+{k:'confirm', l:'C', title:'Stage zero \u2014 name the crew',
  say:'Read the crew name out loud to {F}. He has to agree to it on his watch.',
  wait:'He presses the button on his watch, then tells you he confirmed.'},
 
-{k:'code', l:'E', ch:259241, stop:1,
- place:'Bagels', addr:'Main Street Bagel Factory, 51 Main St, Hudson',
- title:'Breakfast — the crew has to guess it',
- say:'Press the button, then say "{F}, go." His watch gives him a clue. He tells you the clue, the crew guesses what it is, then he gives you the code.',
- wait:'He reads you three numbers.',
- brief:'Round, with a hole in the middle. The crew guessed it. Bagels.',
- crew:'Everybody picks a bagel for somebody ELSE in the crew — never for themselves. {D} may pick a different bagel shop if this one is too far.', money:25},
-
-{k:'confirm', l:'S', stop:1, title:'Give {F} the breakfast challenge',
- say:'Say "{F}, go." His watch reads him the challenge — you do not get to know what it is until he tells you.',
- wait:'He does it, presses his button, and tells you he confirmed.'},
-
-{k:'code', l:'T', ch:262006, stop:2,
- place:"Mommy's house", addr:'',
- title:'Where next?',
- say:'Press the button, then say "{F}, go." His watch has the code for the next place.',
- wait:'He reads you three numbers.',
- brief:'Two jobs here. One: pick up the commander’s real phone. Two: report to Elvis.',
- crew:'Everybody says hello to Elvis before anybody says anything else.'},
-
-{k:'confirm', l:'D', stop:2, title:'Report to Elvis',
- say:'Say "{F}, go." His watch has the Elvis challenge. He runs it, not you.',
- wait:'He does it, presses his button, tells you he confirmed.'},
-
-{k:'code', l:'A', ch:258344, stop:3,
- place:'Base camp \u2014 home', addr:'',
- title:'Where next?',
- say:'Press the button, then say "{F}, go." His watch has the next place.',
- wait:'He reads you three numbers.',
- brief:'Home for the middle of the day. Two builds run at the same time, and neither one is allowed to rush the other.',
- crew:'{C}: your slime studio \u2014 make one nobody has made before. {F} and {D}: build a Roblox game on the computer.'},
-
-{k:'confirm', l:'Y', stop:3, title:'Give {F} the build challenge',
- say:'Say "{F}, go." His watch gives him the build challenge and tells him nobody may rush anybody.',
- wait:'When all three of you have built something, each shows the other two ONE thing they have not seen. Then he presses his button.'},
-
-{k:'code', l:'T', ch:261288, stop:4,
+{k:'code', l:'R', ch:260052, stop:1,
  place:'Dollar Tree', addr:'771 Boston Post Rd E, Marlborough',
  title:'The five dollar mission',
- say:'Press the button, then say "{F}, go." His watch gives him the clue for this one. He tells you the clue, the crew guesses the place, then he gives you the code.',
+ say:'Press the button, then say "{F}, go." His watch gives him the clue. He tells you the clue, the crew guesses the place, then he gives you the code.',
  wait:'He reads you three numbers.',
- brief:'Dollar Tree, 771 Boston Post Rd E. Open until 9pm.',
- crew:'{C} and {F} each get FIVE DOLLARS. Every single thing costs about a dollar, so five dollars is five things. Nobody spends a cent until both of them have walked the whole store once.', money:10},
+ brief:'Dollar Tree, 771 Boston Post Rd E, Marlborough. Open until 9pm.',
+ crew:'{C} and {F} each get FIVE DOLLARS. Almost everything costs about a dollar, so five dollars is five things. Nobody picks up a single thing until both of them have walked the whole store once.', money:10},
 
-{k:'confirm', l:'O', stop:4, title:'Give {F} the five dollar challenge',
- say:'Say "{F}, go." His watch has the spending rules. Then read this out loud: one of your five things has to be for somebody ELSE in the crew, and you cannot tell them which one until you are back in the car.',
- wait:'Both of them have paid, everybody is back in the car, and each shows the crew ONE thing they bought. Then he presses his button.'},
+{k:'confirm', l:'E', stop:1, title:'Give {F} the five dollar rules',
+ say:'Say "{F}, go." His watch has the rules. The hard one: ONE of your five things has to be for somebody else in the crew, and you cannot say which until you are back in the car.',
+ wait:'Both have paid, everybody is back in the car, and each shows the crew one thing they bought. Then he presses his button.'},
 
-{k:'code', l:'G', ch:257416, stop:5,
- place:'{F} chooses what the crew does', addr:'',
- title:'The crew decides \u2014 and {F} has the deciding vote',
- say:'Press the button, then say "{F}, go." His watch tells him this one is HIS. Read him all three out loud, wait, and let him pick. If the crew cannot agree, his pick is the one that counts.',
+{k:'code', l:'W', ch:264883, stop:2,
+ title:'{F} has the deciding vote',
+ say:'Press the button, then say "{F}, go." His watch tells him this one is HIS. Read him all three out loud, wait, and let him pick. If the crew cannot agree, his pick counts.',
  wait:'He reads you three numbers, then tells you what the crew is doing.',
- brief:'All three are at Altitude Trampoline Park, 21 Apex Dr, Marlborough. Open until 8pm. Read these out loud to {F}.',
+ brief:'All three are at Altitude Trampoline Park, 21 Apex Dr, Marlborough. Open until 8pm.',
  opts:[
-   {n:'Eat at Altitude', a:'21 Apex Dr, Marlborough', d:'Sit down and eat together at the park before anybody jumps.'},
-   {n:'$20 in the arcade', a:'21 Apex Dr, Marlborough', d:'Twenty dollars of arcade, split between the two of them. When it is gone, it is gone.'},
-   {n:'The Kids Zone', a:'21 Apex Dr, Marlborough', d:'The little-kid area \u2014 {C} gets a zone that is actually built for her.'}
+   {n:'Eat at Altitude', a:'21 Apex Dr, Marlborough', d:'Sit down and eat together before anybody jumps.'},
+   {n:'$20 in the arcade', a:'21 Apex Dr, Marlborough', d:'Twenty dollars, split between the two of them. When it is gone, it is gone.'},
+   {n:'The Kids Zone', a:'21 Apex Dr, Marlborough', d:'The little-kid area \u2014 {C} gets a zone actually built for her.'}
  ],
  crew:'Whatever {F} picks, the whole crew does it, and nobody sulks about it.'},
 
-{k:'confirm', l:'E', stop:5, title:'Lock the choice in',
- say:'Say "{F}, go." His watch tells him to make all three of you say the choice out loud before anybody moves.',
- wait:'All three of you say it out loud, everybody gets in the car, then he presses his button.'},
-
-{k:'code', l:'T', ch:262995, stop:5,
+{k:'code', l:'Q', ch:261200, stop:2,
  place:'Altitude Trampoline Park', addr:'21 Apex Dr, Marlborough',
  title:'We are here',
  say:'Press the button, then say "{F}, go."',
@@ -427,21 +386,25 @@ var M=[
  brief:'Altitude Trampoline Park, 21 Apex Dr. Open until 8pm. This is the thing {F} picked.',
  crew:'Get the crew in and paid for. Up to $60 here.', money:60},
 
-{k:'confirm', l:'H', stop:5, title:'Give {F} the challenge',
+{k:'confirm', l:'U', stop:2, title:'Give {F} the challenge',
  say:'Say "{F}, go." His watch has the challenge for this place.',
  wait:'All three of you do it \u2014 you and {D} too, not just him. Then he presses his button.'},
 
-{k:'code', l:'E', ch:263983, stop:5, title:'The crew treat',
+{k:'code', l:'E', ch:258219, stop:2, title:'The crew treat',
  say:'Say "{F}, go." His watch has the rule for the treat. Up to $25 here.',
  wait:'He reads you three numbers when everybody has theirs.', money:25},
 
-{k:'code', l:'R', ch:260240, stop:6,
+{k:'code', l:'S', ch:263053, stop:3,
  place:'Base camp \u2014 home', addr:'',
  title:'The last rule',
  say:'Press the button, then say "{F}, go." His watch has the final challenge, and he gets to choose it. This one happens at home.',
  wait:'He reads you the last three numbers.',
  brief:'Home. The operation ends where it started.',
- crew:'Before anybody scatters: each person says the ONE part of today they would do again.'}
+ crew:'Before anybody scatters: each person says the ONE part of tonight they would do again.'},
+
+{k:'confirm', l:'T', stop:3, title:'Stand down',
+ say:'Say "{F}, go." His watch closes the operation.',
+ wait:'He presses his button one last time.'}
 ];
 
 /* DERIVED from the tape above -- never hand-maintained. This used to be a
