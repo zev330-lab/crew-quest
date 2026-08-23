@@ -13,13 +13,16 @@ console.log('THE TAPE');
 {
   const app = loadApp(INDEX);
   const M = app.M;
-  check('15 steps', M.length === 15, M.length);
-  check('the letters still spell BESTDAYTOGETHER',
-        M.map(s => s.l).join('') === 'BESTDAYTOGETHER', M.map(s => s.l).join(''));
-  check('8 code steps (one per watch code)',
-        M.filter(s => s.k === 'code').length === 8, M.filter(s => s.k === 'code').length);
+  // OPERATION TWO (2026-08-23 evening): Zev asked for a fresh program from
+  // stage zero. 9 beats, letters spell CREWQUEST, five all-new codes so nothing
+  // from the earlier tape can unlock anything.
+  check('9 steps', M.length === 9, M.length);
+  check('the letters still spell CREWQUEST',
+        M.map(s => s.l).join('') === 'CREWQUEST', M.map(s => s.l).join(''));
+  check('5 code steps (one per watch code)',
+        M.filter(s => s.k === 'code').length === 5, M.filter(s => s.k === 'code').length);
   const codes = M.filter(s => s.ch).map(s => s.ch);
-  const expected = [259241, 262006, 258344, 261288, 257416, 262995, 263983, 260240];
+  const expected = [260052, 264883, 261200, 258219, 263053];
   check('every watch code is unchanged',
         JSON.stringify(codes) === JSON.stringify(expected), codes.join(','));
   check('every step has words for the commander to say',
@@ -47,6 +50,8 @@ console.log('\nDESTINATIONS (derived from the tape, never hand-written)');
   check('Altitude is a destination', /Altitude/.test(names), names);
   check('the day ends back at base camp',
         /Base camp/i.test(STOPS[STOPS.length - 1].name), STOPS[STOPS.length - 1].name);
+  check('three destinations: the store, Altitude, then home',
+        STOPS.length === 3, STOPS.length + ' destinations');
   check('the dollar store carries its address',
         (STOPS.find(s => /Dollar Tree/.test(s.name)) || {}).addr, 'no address');
   check('Altitude carries its address',
@@ -55,16 +60,20 @@ console.log('\nDESTINATIONS (derived from the tape, never hand-written)');
 }
 
 /* ── 3. what the crew actually SEES at a given point in the day ─────────── */
-console.log('\nWHAT THE PHONE SHOWS AT STEP 8 (the dollar store)');
+console.log('\nWHAT THE PHONE SHOWS AT THE DOLLAR STORE (step 2)');
 {
   const app = loadApp(INDEX);
   app.document.getElementById('inCmd').value = 'Havi';
   app.document.getElementById('inField').value = 'Parker';
   app.document.getElementById('inDrv').value = 'Dad';
   app.saveCrew();
-  app.document.getElementById('jump').value = '8';
+  app.document.getElementById('jump').value = '2';
   app.jumpTo();
-  check('the app is on step 8', app.S.i === 7, 'i=' + app.S.i);
+  check('the app is on step 2', app.S.i === 1, 'i=' + app.S.i);
+  // The reveal is keyed to his CODE, never to arrival -- Zev caught the app
+  // unsealing a place before Parker had given the number, which inverts the
+  // whole point of the game.
+  app.S.codes[1] = '407';
 
   // Read what the app ACTUALLY RENDERED. Recomputing the reveal rule here would
   // make this test agree with itself instead of with the app -- which is the
@@ -75,13 +84,13 @@ console.log('\nWHAT THE PHONE SHOWS AT STEP 8 (the dollar store)');
   const html = stops.innerHTML;
   const cards = (html.match(/DESTINATION \d/g) || []);
   const sealed = (html.match(/SEALED/g) || []);
-  check('six destination cards are drawn', cards.length === 6, cards.length + ' drawn');
+  check('three destination cards are drawn', cards.length === 3, cards.length + ' drawn');
   check('the dollar store is named on screen', /Dollar Tree/.test(html), 'not rendered');
   check('Altitude is NOT revealed yet', !/Altitude/.test(html), 'revealed too early');
-  check('the destination they are standing in is not locked',
-        !new RegExp('DESTINATION 4 · SEALED').test(html.replace(/\\u00b7/g, '·')),
-        'destination 4 still reads SEALED');
-  check('exactly 2 destinations are still ahead', sealed.length === 2, sealed.length + ' sealed');
+  check('the destination he just unlocked with his code is open',
+        !/DESTINATION 1[^<]*SEALED/.test(html.replace(/\\u00b7/g, '\u00b7')),
+        'destination 1 still reads SEALED');
+  check('two destinations are still ahead of him', sealed.length === 2, sealed.length + ' sealed');
   console.log('    -> cards=' + cards.length + ' sealed=' + sealed.length);
 }
 
@@ -89,7 +98,7 @@ console.log('\nWHAT THE PHONE SHOWS AT STEP 8 (the dollar store)');
 console.log('\nNAMES');
 {
   const app = loadApp(INDEX);
-  app.document.getElementById('jump').value = '8';
+  app.document.getElementById('jump').value = '2';
   app.jumpTo();
   check('jumping with no names does NOT start the run',
         app.S.crewOK !== true || (app.S.cmd && app.S.field),
@@ -104,14 +113,14 @@ console.log('\nNAMES');
   app.document.getElementById('inField').value = 'Parker';
   app.document.getElementById('inDrv').value = 'Dad';
   app.saveCrew();
-  app.document.getElementById('jump').value = '8';
+  app.document.getElementById('jump').value = '2';
   app.jumpTo();
-  check('with names entered, the jump works', app.S.i === 7, 'i=' + app.S.i);
+  check('with names entered, the jump works', app.S.i === 1, 'i=' + app.S.i);
   check('the names are stored', app.S.cmd === 'Havi' && app.S.field === 'Parker' && app.S.drv === 'Dad',
         JSON.stringify([app.S.cmd, app.S.field, app.S.drv]));
   check('step text substitutes the real names',
-        app.N(app.M[7].say).indexOf('Parker') >= 0 && app.N(app.M[7].say).indexOf('{F}') < 0,
-        app.N(app.M[7].say).slice(0, 60));
+        app.N(app.M[1].say).indexOf('Parker') >= 0 && app.N(app.M[1].say).indexOf('{F}') < 0,
+        app.N(app.M[1].say).slice(0, 60));
   check('no screen still shows the word "Field Agent" placeholder',
         app.F() === 'Parker', app.F());
 }
@@ -124,11 +133,11 @@ console.log('\nPROGRESS SURVIVES A RELOAD');
   app.document.getElementById('inField').value = 'Parker';
   app.document.getElementById('inDrv').value = 'Dad';
   app.saveCrew();
-  app.document.getElementById('jump').value = '8';
+  app.document.getElementById('jump').value = '2';
   app.jumpTo();
   const saved = app.__store;
   const app2 = loadApp(INDEX, { localStorage: saved });
-  check('the step survives', app2.S.i === 7, 'i=' + app2.S.i);
+  check('the step survives', app2.S.i === 1, 'i=' + app2.S.i);
   check('the names survive', app2.S.field === 'Parker', app2.S.field);
 }
 
@@ -149,8 +158,10 @@ console.log('\nPHONE AND WATCH AGREE');
     const spoken = swift;
     check('the watch knows about the dollar store',
           /dollar/i.test(spoken), 'no dollar-store line on the watch');
-    check('the watch no longer talks about lunch at home',
-          !/one part of lunch|runs the kitchen/i.test(spoken), 'stale lunch text still on the watch');
+    check('the watch was reset to stage zero for the new operation',
+          /tapeVersion = 3/.test(swift), 'tapeVersion did not move to 3');
+    check('the watch no longer carries the old afternoon',
+          !/one part of lunch|runs the kitchen|mini golf/i.test(spoken), 'stale text still on the watch');
     check('the watch finale happens at base camp',
           /base camp/i.test(spoken), 'finale does not mention base camp');
   }
