@@ -389,54 +389,58 @@ var M=[
  say:'Say "{F}, go." His watch gives him the build challenge and tells him nobody may rush anybody.',
  wait:'When all three of you have built something, each shows the other two ONE thing they have not seen. Then he presses his button.'},
 
-{k:'code', l:'T', ch:261288, stop:3,
- place:'Lunch at base camp', addr:'',
- title:'Lunch',
- say:'Press the button, then say "{F}, go." This one is not a new place \u2014 his watch will tell him it is lunch, at home.',
+{k:'code', l:'T', ch:261288, stop:4,
+ place:'Dollar Tree', addr:'771 Boston Post Rd E, Marlborough',
+ title:'The five dollar mission',
+ say:'Press the button, then say "{F}, go." His watch gives him the clue for this one. He tells you the clue, the crew guesses the place, then he gives you the code.',
  wait:'He reads you three numbers.',
- brief:'Lunch, at home. Nobody drives anywhere.',
- crew:'Everybody makes one part of it. {C} runs the kitchen. {D} only helps when asked. Eat at the same table with the watches and phones down.'},
+ brief:'Dollar Tree, 771 Boston Post Rd E. Open until 9pm.',
+ crew:'{C} and {F} each get FIVE DOLLARS. Every single thing costs about a dollar, so five dollars is five things. Nobody spends a cent until both of them have walked the whole store once.', money:10},
 
-{k:'confirm', l:'O', stop:3, title:'Give {F} the lunch challenge',
- say:'Say "{F}, go." His watch has the lunch rules.',
- wait:'When lunch is eaten and the table is clear, he presses his button and tells you he confirmed.'},
+{k:'confirm', l:'O', stop:4, title:'Give {F} the five dollar challenge',
+ say:'Say "{F}, go." His watch has the spending rules. Then read this out loud: one of your five things has to be for somebody ELSE in the crew, and you cannot tell them which one until you are back in the car.',
+ wait:'Both of them have paid, everybody is back in the car, and each shows the crew ONE thing they bought. Then he presses his button.'},
 
-{k:'code', l:'G', ch:257416, stop:4,
- place:'{F} chooses where the crew goes', addr:'',
+{k:'code', l:'G', ch:257416, stop:5,
+ place:'{F} chooses what the crew does', addr:'',
  title:'The crew decides \u2014 and {F} has the deciding vote',
- say:'Press the button, then say "{F}, go." His watch tells him this one is HIS. Read him all three places out loud, wait, and let him pick. If the crew cannot agree, his pick is the one that counts.',
- wait:'He reads you three numbers, then tells you where the crew is going.',
- brief:'Read these out loud to {F}. All three are open right now.',
+ say:'Press the button, then say "{F}, go." His watch tells him this one is HIS. Read him all three out loud, wait, and let him pick. If the crew cannot agree, his pick is the one that counts.',
+ wait:'He reads you three numbers, then tells you what the crew is doing.',
+ brief:'All three are at Altitude Trampoline Park, 21 Apex Dr, Marlborough. Open until 8pm. Read these out loud to {F}.',
  opts:[
-   {n:'Apex Entertainment', a:'21 Apex Dr, Marlborough', d:'Bowling, indoor go-karts, laser tag, bumper cars, 70+ arcade games. Open until 9pm.'},
-   {n:'Regal Solomon Pond', a:'591 Donald Lynch Blvd, Marlborough', d:'A movie on a big screen. Open until 11:30pm \u2014 check what is showing when you pick.'},
-   {n:"Trombetta's Farm", a:'655 Farm Rd, Marlborough', d:'Indoor mini golf inside a greenhouse, and ice cream after.'}
+   {n:'Eat at Altitude', a:'21 Apex Dr, Marlborough', d:'Sit down and eat together at the park before anybody jumps.'},
+   {n:'$20 in the arcade', a:'21 Apex Dr, Marlborough', d:'Twenty dollars of arcade, split between the two of them. When it is gone, it is gone.'},
+   {n:'The Kids Zone', a:'21 Apex Dr, Marlborough', d:'The little-kid area \u2014 {C} gets a zone that is actually built for her.'}
  ],
- crew:'Whatever {F} picks, the whole crew goes, and nobody sulks about it.'},
+ crew:'Whatever {F} picks, the whole crew does it, and nobody sulks about it.'},
 
-{k:'confirm', l:'E', stop:4, title:'Lock the choice in',
+{k:'confirm', l:'E', stop:5, title:'Lock the choice in',
  say:'Say "{F}, go." His watch tells him to make all three of you say the choice out loud before anybody moves.',
  wait:'All three of you say it out loud, everybody gets in the car, then he presses his button.'},
 
-{k:'code', l:'T', ch:262995, stop:4,
- place:'Wherever the crew chose', addr:'',
+{k:'code', l:'T', ch:262995, stop:5,
+ place:'Altitude Trampoline Park', addr:'21 Apex Dr, Marlborough',
  title:'We are here',
  say:'Press the button, then say "{F}, go."',
  wait:'He reads you three numbers.',
- brief:'You made it. This is the place {F} picked.',
+ brief:'Altitude Trampoline Park, 21 Apex Dr. Open until 8pm. This is the thing {F} picked.',
  crew:'Get the crew in and paid for. Up to $60 here.', money:60},
 
-{k:'confirm', l:'H', stop:4, title:'Give {F} the challenge',
+{k:'confirm', l:'H', stop:5, title:'Give {F} the challenge',
  say:'Say "{F}, go." His watch has the challenge for this place.',
  wait:'All three of you do it \u2014 you and {D} too, not just him. Then he presses his button.'},
 
-{k:'code', l:'E', ch:263983, stop:4, title:'The crew treat',
+{k:'code', l:'E', ch:263983, stop:5, title:'The crew treat',
  say:'Say "{F}, go." His watch has the rule for the treat. Up to $25 here.',
  wait:'He reads you three numbers when everybody has theirs.', money:25},
 
-{k:'code', l:'R', ch:260240, stop:4, title:'The last rule',
- say:'Say "{F}, go." His watch has the final challenge, and he gets to choose it.',
- wait:'He reads you the last three numbers.'}
+{k:'code', l:'R', ch:260240, stop:6,
+ place:'Base camp \u2014 home', addr:'',
+ title:'The last rule',
+ say:'Press the button, then say "{F}, go." His watch has the final challenge, and he gets to choose it. This one happens at home.',
+ wait:'He reads you the last three numbers.',
+ brief:'Home. The operation ends where it started.',
+ crew:'Before anybody scatters: each person says the ONE part of today they would do again.'}
 ];
 
 var STOPS=[
