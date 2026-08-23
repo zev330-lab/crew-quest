@@ -283,10 +283,10 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
   <div id="stops"></div>
 
   <div class="panel" style="margin-top:20px">
-    <div class="lbl">◈ Moving to another phone?</div>
+    <div class="lbl">◈ Jump to a step</div>
     <p class="ask" style="margin-top:8px">Type the step number the crew is really on and press GO. Everything before it counts as done. Use this if the crew got ahead of the app, or to continue on a different phone.</p>
     <div class="guess" style="margin-top:10px">
-      <input id="jump" inputmode="numeric" maxlength="2" placeholder="Pick up from step (1–15)" autocomplete="off"
+      <input id="jump" inputmode="numeric" maxlength="2" placeholder="Which step are you on? (1–15)" autocomplete="off"
              onkeydown="if(event.key==='Enter')jumpTo()"><button onclick="jumpTo()">GO</button>
     </div>
     <div class="verdict" id="jumpv"></div>
@@ -307,7 +307,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='command-deck-v4';
-var TAPE='2026-08-23-pm-dollar-altitude';
+var TAPE='2026-08-23-pm-dollar-altitude-b';
 var CREW_OK_HASH=265138;
 var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
@@ -372,7 +372,7 @@ var M=[
  say:'Press the button, then say "{F}, go." His watch has the code for the next place.',
  wait:'He reads you three numbers.',
  brief:'Two jobs here. One: pick up the commander’s real phone. Two: report to Elvis.',
- crew:'If the commander is switching to her own phone here, open it and use PICK UP FROM STEP at the bottom — type 5.'},
+ crew:'Everybody says hello to Elvis before anybody says anything else.'},
 
 {k:'confirm', l:'D', stop:2, title:'Report to Elvis',
  say:'Say "{F}, go." His watch has the Elvis challenge. He runs it, not you.',

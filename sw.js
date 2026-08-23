@@ -3,7 +3,7 @@
    fallback so a reload in the car — or a dead zone at Trombetta's — still
    opens the app. Written 2026-08-23 after a reload mid-drive showed a blank
    screen: the game had no offline copy at all. */
-var CACHE = 'crewquest-v5';
+var CACHE = 'crewquest-v6';
 var SHELL = ['./', './index.html'];
 
 self.addEventListener('install', function (e) {
