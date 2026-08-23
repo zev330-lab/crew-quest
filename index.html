@@ -307,7 +307,7 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
    STATE
    ========================================================= */
 var KEY='command-deck-v4';
-var TAPE='2026-08-23-pm-dollar-altitude-c';
+var TAPE='2026-08-23-pm-dollar-altitude-d';
 var CREW_OK_HASH=265138;
 var S={cmd:'',field:'',drv:'',phone:'',i:0,solved:{},tasks:{},sent:{},spent:0,codes:{},crewOK:false};
 try{var r=localStorage.getItem(KEY);if(r){var p=JSON.parse(r);for(var k in p)S[k]=p[k];}}catch(e){}
@@ -561,7 +561,10 @@ function renderStops(){
     // ahead and work out where the day is going.
     var firstStage = -1;
     M.forEach(function(m,i){ if(m.stop===st.n && firstStage<0) firstStage=i; });
-    var open = firstStage>=0 && !!S.codes[firstStage];
+    // Open once the crew has REACHED this stop -- either they entered its
+    // first code, or the run is already at/past that beat (a jump skips the
+    // code, and the destination you are standing in must never read locked).
+    var open = firstStage>=0 && (!!S.codes[firstStage] || S.i>=firstStage);
     var d=document.createElement('div');
     d.className='stopcard'+(open?'':' locked');
     d.innerHTML='<div class="n">DESTINATION '+st.n+(open?'':' \u00b7 SEALED')+'</div>'+
@@ -663,6 +666,11 @@ function jumpTo(){
   var el=document.getElementById('jump'),v=document.getElementById('jumpv');
   var n=parseInt((el.value||'').replace(/\D/g,''),10);
   if(isNaN(n)||n<1||n>M.length){v.className='verdict no';v.textContent='\u2717 Pick a step from 1 to '+M.length+'.';el.focus();return;}
+  if(!S.cmd || !S.field){
+    v.className='verdict no';
+    v.textContent='\u2717 Put the crew names in at the top first, then press LOCK IN THE CREW.';
+    buzz(90); return;
+  }
   for(var k=0;k<n-1;k++){S.codes[k]='carried';S.tasks['done_'+k]=true;}
   S.i=n-1; S.crewOK=true; save(); buzz([25,60,25]);
   v.className='verdict yes'; v.textContent='\u2713 Picking up from step '+n+'.';
