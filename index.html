@@ -279,6 +279,9 @@ header{position:sticky;top:0;z-index:50;background:var(--panel-2);border-bottom:
 
   <div id="mission"></div>
 
+  <p class="foot" style="margin-top:18px">Today\u2019s plan ends at base camp, after the slime and the Roblox game.
+     Steps 8 onward are still here if the crew decides to go back out \u2014 they are not cancelled, just not the plan.</p>
+
   <div class="sect"><div class="lbl">Destinations</div><hr></div>
   <div id="stops"></div>
 
@@ -382,12 +385,12 @@ var M=[
  title:'Where next?',
  say:'Press the button, then say "{F}, go." His watch has the next place. \u26a0 His watch still has the old rainy-morning plan and will say the place is OUTSIDE. Tell {F}: "It rained, so we changed it \u2014 we are going home." The number he gives you is still right.',
  wait:'He reads you three numbers.',
- brief:'Home, for quiet playtime. Dry, free, and nobody has to be anywhere.',
- crew:'Everybody picks one thing to play with on their own for a while. {D} does not organise it. The crew comes back together when {C} says.'},
+ brief:'Home for the rest of the day. Two missions run at the same time, and neither crew is allowed to rush the other.',
+ crew:'{C}: your slime studio \u2014 make something nobody has made before. {F} and {D}: build a Roblox game on the computer. You are each building something; that is the same job in two rooms.'},
 
-{k:'confirm', l:'Y', stop:3, title:'Give {F} the challenge',
- say:'Say "{F}, go." His watch has the challenge. \u26a0 It will say "on the walk" and mention a bug or a tree \u2014 tell {F} it counts at home too: find something in this house the other two never noticed.',
- wait:'All three of you do it. He presses his button, tells you he confirmed.'},
+{k:'confirm', l:'Y', stop:3, title:'The last mission \u2014 show each other',
+ say:'Say "{F}, go." His watch has the challenge. \u26a0 It will say "on the walk" and mention a bug or a tree \u2014 tell {F} it means something else today: when the building is done, each of you shows the other two ONE thing you made that they have not seen.',
+ wait:'All three of you show yours. He presses his button, tells you he confirmed.'},
 
 {k:'code', l:'T', ch:261288, stop:4,
  place:"Trombetta's Farm", addr:'655 Farm Rd, Marlborough',
